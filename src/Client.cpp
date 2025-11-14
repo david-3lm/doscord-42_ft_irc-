@@ -76,6 +76,12 @@ bool Client::tryToRegister(std::vector<std::string> registered)
 	return true;
 }
 
+void Client::quitClient()
+{
+	close(_poll_client.fd);
+	std::cout << "DESCONECTAMOS CLIENTE ["<< _nick << "]" << std::endl;
+}
+
 std::ostream &operator<<(std::ostream &os, const Client &c)
 {
 	os << c.getNick();

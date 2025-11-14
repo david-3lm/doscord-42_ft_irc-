@@ -91,7 +91,6 @@ void Server::server_loop()
 				}
 			}
 		}
-		//TODO: clients to auth & register clients
 		if (_clients_to_auth)
 			register_clients();
 
@@ -113,9 +112,31 @@ void Server::register_clients()
 			_registered_clients.push_back(nick);
 			_clients_to_auth--;
 			std::cout << "Enviamos mensaje a pollfd => " << i << std::endl;
-			int sent = send(_polls[i+1].fd, "CONECTADO\r\n", 11, 0);
 
-			std::cout << "Sent: " << sent << std::endl;
+			std::string art =
+			" ⠀⠀⠀⠀⢀⣤⡀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\r\n"
+			" ⠀⠀⠀⠀⣿⠉⢻⠟⢹⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\r\n"
+			" ⠀⠀⠀⢀⣿⡄⠀⠀⣼⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣄⣠⣤⣄⠀⠀⠀⠀\r\n"
+			" ⠀⠀⣰⡿⠋⠀⣀⣀⠈⣿⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⣇⠘⠋⠀⣿⠇⠀⠀⠀\r\n"
+			" ⠀⣠⡟⠀⢀⣾⠟⠻⠿⠿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⣀⡀⠀⠀⣾⠋⢀⣀⠈⠻⢶⣄⠀⠀\r\n"
+			" ⢠⣿⠁⣰⡿⠁⠀⣀⣤⣶⣶⡶⢶⣤⣄⡀⢀⣠⠴⠚⠉⠉⠉⠉⠉⠙⢶⡄⠛⠒⠛⠙⢳⣦⡀⠹⣆⠀\r\n"
+			" ⢸⡇⢠⣿⣠⣴⣿⡟⢉⣠⠤⠶⠶⠾⠯⣿⣿⣧⣀⣤⣶⣾⣿⡿⠿⠛⠋⢙⣛⡛⠳⣄⡀⠙⣷⡀⢹⡆\r\n"
+			" ⢸⠀⢸⣿⣿⣿⣿⠞⠉⠀⠀⠀⠀⣀⣤⣤⠬⠉⠛⠻⠿⠟⠉⢀⣠⢞⣭⣤⣤⣍⠙⠺⢷⡀⢸⡇⠀⣿\r\n"
+			" ⢸⠀⢸⣿⣿⡟⠀⠀⠀⢀⣠⠞⣫⢗⣫⢽⣶⣤⣀⠉⠛⣶⠖⠛⠀⣾⡷⣾⠋⣻⡆⠀⠀⡇⣼⠇⠀⣿\r\n"
+			" ⢸⠀⠀⣿⣿⡇⢠⡤⠔⣋⡤⠞⠁⢸⣷⣾⣯⣹⣿⡆⢀⣏⠀⠈⠈⣿⣷⣼⣿⠿⠷⣴⡞⠀⣿⠀⠀⣿\r\n"
+			" ⢸⠀⠀⢿⣿⡇⠀⠀⠘⠻⠤⣀⡀⠸⣿⣯⣿⣿⡿⠷⠚⠉⠛⠛⠛⠛⠉⠉⠀⣠⡾⠛⣦⢸⡏⠀⠀⣿\r\n"
+			" ⢸⠀⠀⢸⣿⡇⠀⣠⠶⠶⠶⠶⠿⣿⣭⣭⣁⣀⣠⣤⣤⣤⣤⣤⣤⡶⠶⠛⠋⢁⣀⣴⠟⣽⠇⠀⠀⣿\r\n"
+			" ⢸⠀⠀⢸⣿⡇⢾⣅⠀⠀⠶⠶⢦⣤⣤⣀⣉⣉⣉⣉⣁⣡⣤⣤⣴⡶⠶⠶⠚⠉⢉⡿⣠⠟⠀⠀⣰⡟\r\n"
+			" ⢸⡀⠀⠀⢿⣇⠀⠈⠛⠳⠶⠤⠤⢤⣀⣉⣉⣉⣉⣉⣉⣁⣀⣠⣤⡤⠤⠤⠶⠞⢻⡟⠃⠀⠀⣰⠟⠀\r\n"
+			" ⢸⣧⠀⠀⠘⣿⣦⣄⡀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⣠⣤⣶⣿⣧⣀⣴⠟⠃⠀⠀\r\n"
+			" ⠀⢻⣆⠀⠀⠈⢻⣿⣿⣷⣶⣤⣄⣀⣀⣀⣠⣤⣶⣶⣶⣶⣶⣶⣶⣿⣿⣿⣿⣿⣿⣟⡉⠀⠀⠀⠀⠀\r\n"
+			" ⠀⠀⢻⣦⡄⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀⠀⠀⠀\r\n"
+			" ⠀⢀⣿⣿⣿⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡧⠀⠀⠀\r\n"
+			"\r\n"
+			" ⠀⠀⠀⠀⠀⠀⠀⠀⠀✨ **Conectado!!** ✨⠀⠀⠀⠀⠀⠀⠀⠀⠀\r\n";
+
+			send(_polls[i+1].fd, art.c_str(), art.length(), 0);
+
 		}
 		i++;
 	}
@@ -165,6 +186,22 @@ void Server::poll_client(size_t p_idx)
 	if (read <= 0)
 	{
 		//TODO: TRALALERO
+		if (read == -1)
+			std::cerr << RED << "Error trying to read" << NO_COLOR << std::endl;
+		std::cout << CYAN << "cerramos clientes" << NO_COLOR << std::endl;
+		_clients[p_idx - 1].quitClient();
+		if (!_clients[p_idx - 1].getRegistered())
+			_clients_to_auth--;
+		else
+		{
+			std::string nick = _clients[p_idx - 1].getNick();
+			std::vector<std::string>::iterator it = std::find(_registered_clients.begin(), _registered_clients.end(), nick);
+			if (it != _registered_clients.end())
+				_registered_clients.erase(it);
+			//TODO: eliminar de los canales
+		}
+		_polls.erase(_polls.begin() + p_idx);
+		_clients.erase(_clients.begin() + p_idx - 1);
 		return;
 	}
 	_polls[p_idx].revents = 0;
@@ -209,6 +246,46 @@ void Server::parse_buff(std::string buff, size_t cl_idx)
 			//TODO: ERRORES
 			_clients[cl_idx].setUser(user);
 			std::cout << "USER [" << _clients[cl_idx].getUser() << "]" << std::endl;
+		}
+		else if (com == "JOIN")
+		{
+			/*TODO: CREAR SERVER revisando que empiece por #
+			/join #channel
+			*/
+		}
+		else if (com == "KICK")
+		{
+			/*TODO:
+			echar a una persona de un canal
+			comprobar que estas en el canal
+			que existe el canal
+
+			*/
+		}
+		else if (com == "INVITE")
+		{
+			/*TODO:
+			/invite <nickname> #channel
+			*/
+			
+		}
+		else if (com == "TOPIC")
+		{
+			/*
+			/topic this is the new channel topic
+			*/
+		}
+		else if (com == "MODE")
+		{
+			/*TODO:
+			/mode #channel +/-attribute [data]
+				· i: Set/remove Invite-only channel
+				· t: Set/remove the restrictions of the TOPIC command to channel operators
+				· k: Set/remove the channel key (password)
+				· o: Give/take channel operator privilege
+				· l: Set/remove the user limit to channel
+
+			*/
 		}
 	}
 	

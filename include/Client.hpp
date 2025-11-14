@@ -41,6 +41,8 @@ public:
 	void setRegistered(bool reg);
 
 	bool tryToRegister(std::vector<std::string> registered);
+
+	void quitClient();
 };
 
 std::ostream& operator<<(std::ostream& os, const Client& c);
