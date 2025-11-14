@@ -148,5 +148,37 @@ void Server::poll_client(size_t p_idx)
 	_polls[p_idx].revents = 0;
 	std::cout << BLUE << "Message from client: "<< _clients[p_idx - 1] << "\n"
 		<< "read => " << read << "\n" << "[" << _buff << " ]" << NO_COLOR << std::endl;
+	parse_buff(std::string(_buff), (p_idx - 1));
 	std::fill_n(_buff, read, 0);
+}
+
+void Server::parse_buff(std::string buff, size_t cl_idx)
+{
+	size_t pos;
+	std::string line;
+	std::istringstream is(buff);
+	std::string com;
+
+	//std::cout<< "buff => " <<  << std::endl;
+	while (getline(is, line))
+	{
+		pos = line.find(" ");
+		com = line.substr(0, pos);
+		std::cout << "com[" << com << "]" << std::endl;
+		if (com == "PASS")
+		{
+			_clients[cl_idx].setPass(line.substr(pos + 1, line.find("\r")));
+		}
+		else if (com == "NICK")
+		{
+			_clients[cl_idx].setNick(line.substr(pos + 1, line.find("\r")));
+		}
+		else if (com == "USER")
+		{
+			_clients[cl_idx].setUser(line.substr(pos + 1, pos + line.find_first_of(' ', pos)));
+			std::cout << "USER [" << _clients[cl_idx].getUser() << "]" << std::endl;
+		}
+	}
+	
+	
 }

@@ -20,6 +20,7 @@
 #include <ctime>
 #include <exception>
 #include <fcntl.h>
+#include <fstream>
 #include <iostream>
 #include <netinet/in.h>
 #include <poll.h>
@@ -67,6 +68,7 @@ private:
 	void server_loop();
 	void poll_server();
 	void poll_client(size_t p_idx);
+	void parse_buff(std::string buff, size_t cl_idx);
 	
 public:
     Server(int port, std::string pass);
