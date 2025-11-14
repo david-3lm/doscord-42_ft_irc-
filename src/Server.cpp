@@ -159,7 +159,6 @@ void Server::parse_buff(std::string buff, size_t cl_idx)
 	std::istringstream is(buff);
 	std::string com;
 
-	//std::cout<< "buff => " <<  << std::endl;
 	while (getline(is, line))
 	{
 		pos = line.find(" ");
@@ -168,6 +167,11 @@ void Server::parse_buff(std::string buff, size_t cl_idx)
 		if (com == "PASS")
 		{
 			_clients[cl_idx].setPass(line.substr(pos + 1, line.find("\r")));
+			if (_clients[cl_idx].getPass() != _pass)
+			{
+				kick_client(cl_idx);
+				return;
+			}
 		}
 		else if (com == "NICK")
 		{
@@ -181,4 +185,10 @@ void Server::parse_buff(std::string buff, size_t cl_idx)
 	}
 	
 	
+}
+
+void kick_client(size_t cl_idx)
+{
+	std::cerr << RED << "error: password incorrect" << NO_COLOR << std::endl;
+	//TODO: mandar al cliente al carajo
 }
