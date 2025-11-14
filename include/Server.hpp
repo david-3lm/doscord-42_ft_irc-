@@ -63,12 +63,14 @@ private:
 
 	std::vector<struct pollfd> _polls;
 	std::vector<Client> _clients;
+	std::vector<std::string> _registered_clients;
 
 	void init();
 	void server_loop();
 	void poll_server();
 	void poll_client(size_t p_idx);
 	void parse_buff(std::string buff, size_t cl_idx);
+	void register_clients();
 	
 public:
     Server(int port, std::string pass);

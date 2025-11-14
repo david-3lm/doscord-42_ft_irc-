@@ -69,8 +69,8 @@ void Server::server_loop()
 	while (true)
 	{
 		std::cout << GREEN << "————————————— CLIENTS ————————————" << std::endl;
-		for (size_t i = 0; i < _clients.size(); i++)
-			std::cout << "Name (" << i << ")" << _clients[i] << std::endl;
+		for (size_t i = 0; i < _registered_clients.size(); i++)
+			std::cout << "Name (" << i << ")" << _registered_clients[i] << std::endl;
 		std::cout << "——————————————————————————————————" << NO_COLOR << std::endl;
 
 		n_polls = poll(&_polls[0], _polls.size(), 7000);
@@ -83,7 +83,6 @@ void Server::server_loop()
 			{
 				if (_polls[i].revents & POLLIN)
 				{
-					//TODO: SERVER COSAS
 					if (i == 0)
 						poll_server();
 					else
@@ -93,10 +92,33 @@ void Server::server_loop()
 			}
 		}
 		//TODO: clients to auth & register clients
+		if (_clients_to_auth)
+			register_clients();
 
 		//TODO: CHANNEL COSAS
 	}
 	
+}
+
+void Server::register_clients()
+{
+	size_t i = 0;
+	std::string nick;
+
+	while (i < _clients.size() && _clients_to_auth)
+	{
+		if (_clients[i].tryToRegister(_registered_clients))
+		{
+			nick = _clients[i].getNick();
+			_registered_clients.push_back(nick);
+			_clients_to_auth--;
+			std::cout << "Enviamos mensaje a pollfd => " << i << std::endl;
+			int sent = send(_polls[i+1].fd, "CONECTADO\r\n", 11, 0);
+
+			std::cout << "Sent: " << sent << std::endl;
+		}
+		i++;
+	}
 }
 
 void Server::poll_server()
@@ -132,7 +154,7 @@ void Server::poll_server()
 
 	_polls.push_back(new_poll);
 	_clients.push_back(Client(new_poll, addr));
-	//TODO: clients to auth
+	_clients_to_auth++;
 }
 
 void Server::poll_client(size_t p_idx)
@@ -146,7 +168,7 @@ void Server::poll_client(size_t p_idx)
 		return;
 	}
 	_polls[p_idx].revents = 0;
-	std::cout << BLUE << "Message from client: "<< _clients[p_idx - 1] << "\n"
+	std::cout << BLUE << p_idx << " <=pollfd | Message from client: "<< _clients[p_idx - 1] << "\n"
 		<< "read => " << read << "\n" << "[" << _buff << " ]" << NO_COLOR << std::endl;
 	parse_buff(std::string(_buff), (p_idx - 1));
 	std::fill_n(_buff, read, 0);
@@ -166,29 +188,29 @@ void Server::parse_buff(std::string buff, size_t cl_idx)
 		std::cout << "com[" << com << "]" << std::endl;
 		if (com == "PASS")
 		{
-			_clients[cl_idx].setPass(line.substr(pos + 1, line.find("\r")));
-			if (_clients[cl_idx].getPass() != _pass)
+			std::string pass = line.substr(pos + 1, line.find("\r") - (pos + 1));
+			if (pass != _pass)
 			{
-				kick_client(cl_idx);
-				return;
+				std::cout << _clients[cl_idx].getPass() << " BAd Pass"<< std::endl;
+				//kick_client(cl_idx);
+				continue;
 			}
+			_clients[cl_idx].setPass(pass);
 		}
 		else if (com == "NICK")
 		{
-			_clients[cl_idx].setNick(line.substr(pos + 1, line.find("\r")));
+			std::string nick = line.substr(pos + 1, line.find("\r") - (pos + 1));
+			//TODO: ERRORES
+			_clients[cl_idx].setNick(nick);
 		}
 		else if (com == "USER")
 		{
-			_clients[cl_idx].setUser(line.substr(pos + 1, pos + line.find_first_of(' ', pos)));
+			std::string user = line.substr(pos + 1, pos + line.find_first_of(' ', pos));
+			//TODO: ERRORES
+			_clients[cl_idx].setUser(user);
 			std::cout << "USER [" << _clients[cl_idx].getUser() << "]" << std::endl;
 		}
 	}
 	
 	
-}
-
-void kick_client(size_t cl_idx)
-{
-	std::cerr << RED << "error: password incorrect" << NO_COLOR << std::endl;
-	//TODO: mandar al cliente al carajo
 }

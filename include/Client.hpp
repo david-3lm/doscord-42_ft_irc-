@@ -23,6 +23,7 @@ private:
 	std::string _pass;
 	std::string _nick;
 	std::string _user;
+	bool _registered;
 public:
     Client(pollfd poll, sockaddr addr);
     ~Client();
@@ -32,10 +33,14 @@ public:
 	std::string getPass() const;
 	std::string getNick() const;
 	std::string getUser() const;
+	bool getRegistered() const;
 
 	void setPass(std::string pass);
 	void setNick(std::string nick);
 	void setUser(std::string user);
+	void setRegistered(bool reg);
+
+	bool tryToRegister(std::vector<std::string> registered);
 };
 
 std::ostream& operator<<(std::ostream& os, const Client& c);
