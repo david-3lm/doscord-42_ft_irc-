@@ -69,8 +69,20 @@ private:
 	void server_loop();
 	void poll_server();
 	void poll_client(size_t p_idx);
-	void parse_buff(std::string buff, size_t cl_idx);
 	void register_clients();
+
+	//Parse and commands to regist
+	void parse_buff(std::string buff, size_t cl_idx);
+	void reg_pass(std::string line, size_t pos, size_t cl_idx);
+	void reg_nick(std::string line, size_t pos, size_t cl_idx);
+	void reg_user(std::string line, size_t pos, size_t cl_idx);
+
+	//Channel commands
+	void ch_join(std::string line, size_t pos, size_t cl_idx);
+	void ch_kick(std::string line, size_t pos, size_t cl_idx);
+	void ch_invite(std::string line, size_t pos, size_t cl_idx);
+	void ch_topic(std::string line, size_t pos, size_t cl_idx);
+	void ch_mode(std::string line, size_t pos, size_t cl_idx);
 	
 public:
     Server(int port, std::string pass);

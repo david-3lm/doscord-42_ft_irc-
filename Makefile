@@ -6,8 +6,11 @@ SRC_DIR = src
 OBJ_DIR = obj
 
 SRC_FILES = main.cpp \
-	Server.cpp \
-	Client.cpp
+	Channel_commands.cpp \
+	Channel.cpp \
+	Client.cpp \
+	Register_client.cpp \
+	Server.cpp
 
 
 HEADERS =

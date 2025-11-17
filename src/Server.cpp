@@ -224,69 +224,21 @@ void Server::parse_buff(std::string buff, size_t cl_idx)
 		com = line.substr(0, pos);
 		std::cout << "com[" << com << "]" << std::endl;
 		if (com == "PASS")
-		{
-			std::string pass = line.substr(pos + 1, line.find("\r") - (pos + 1));
-			if (pass != _pass)
-			{
-				std::cout << _clients[cl_idx].getPass() << " BAd Pass"<< std::endl;
-				//kick_client(cl_idx);
-				continue;
-			}
-			_clients[cl_idx].setPass(pass);
-		}
+			reg_pass(line, pos, cl_idx);
 		else if (com == "NICK")
-		{
-			std::string nick = line.substr(pos + 1, line.find("\r") - (pos + 1));
-			//TODO: ERRORES
-			_clients[cl_idx].setNick(nick);
-		}
+			reg_nick(line, pos, cl_idx);
 		else if (com == "USER")
-		{
-			std::string user = line.substr(pos + 1, pos + line.find_first_of(' ', pos));
-			//TODO: ERRORES
-			_clients[cl_idx].setUser(user);
-			std::cout << "USER [" << _clients[cl_idx].getUser() << "]" << std::endl;
-		}
+			reg_user(line, pos, cl_idx);
 		else if (com == "JOIN")
-		{
-			/*TODO: CREAR SERVER revisando que empiece por #
-			/join #channel
-			*/
-		}
+			ch_join(line, pos, cl_idx);
 		else if (com == "KICK")
-		{
-			/*TODO:
-			echar a una persona de un canal
-			comprobar que estas en el canal
-			que existe el canal
-
-			*/
-		}
+			ch_kick(line, pos, cl_idx);
 		else if (com == "INVITE")
-		{
-			/*TODO:
-			/invite <nickname> #channel
-			*/
-			
-		}
+			ch_invite(line, pos, cl_idx);
 		else if (com == "TOPIC")
-		{
-			/*
-			/topic this is the new channel topic
-			*/
-		}
+			ch_topic(line, pos, cl_idx);
 		else if (com == "MODE")
-		{
-			/*TODO:
-			/mode #channel +/-attribute [data]
-				· i: Set/remove Invite-only channel
-				· t: Set/remove the restrictions of the TOPIC command to channel operators
-				· k: Set/remove the channel key (password)
-				· o: Give/take channel operator privilege
-				· l: Set/remove the user limit to channel
-
-			*/
-		}
+			ch_mode(line, pos, cl_idx);
 	}
 	
 	

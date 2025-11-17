@@ -9,18 +9,26 @@ int	main_error(const char *message, int error_code)
 	return (error_code);
 }
 
+bool parse_args(std::string port, std::string pass)
+{
+	size_t port_len = std::count_if(port.begin(), port.end(), isdigit);
+	if (port_len != port.length())
+		return main_error("Only digits in <port> 🔢", EXIT_FAILURE), false;
+	if (pass.empty())
+		return main_error("<password> empty. Try put something 😉", EXIT_FAILURE), false;
+	return true;
+}
 
 int main(int argc, char const *argv[])
 {
 	if (argc != 3)
-		return main_error("Invalid number of arguments", EXIT_FAILURE);
+		return main_error("Invalid number of arguments 🥸", EXIT_FAILURE);
 	
-
 	std::string port = argv[1];
-	//TODO: ERRORES
-
 	std::string pass = argv[2];
-	//TODO: ERRORES
+	if (!parse_args(port, pass))
+		return EXIT_FAILURE;
+	std::cout << "aaaaa" << std::endl;
 
 	try
 	{
