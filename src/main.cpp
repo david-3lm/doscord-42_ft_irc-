@@ -28,7 +28,6 @@ int main(int argc, char const *argv[])
 	std::string pass = argv[2];
 	if (!parse_args(port, pass))
 		return EXIT_FAILURE;
-	std::cout << "aaaaa" << std::endl;
 
 	try
 	{

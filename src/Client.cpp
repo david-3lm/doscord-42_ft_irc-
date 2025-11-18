@@ -2,6 +2,8 @@
 
 Client::Client(pollfd poll, sockaddr addr) : _poll_client(poll), _addr(addr) 
 {
+
+	_registered = false;
 	
 }
 
@@ -23,46 +25,52 @@ Client &Client::operator=(const Client &other)
 
 std::string Client::getPass() const
 {
-	return _pass;
+	return this->_pass;
 }
 
 std::string Client::getNick() const
 {
-	return _nick;
+	return this->_nick;
 }
 
 std::string Client::getUser() const
 {
-	return _user;
+	return this->_user;
 }
 
 bool Client::getRegistered() const
 {
-	return _registered;
+	return this->_registered;
 }
 
 void Client::setPass(std::string pass)
 {
-	_pass = pass;
+	this->_pass = pass;
 }
 
 void Client::setNick(std::string nick)
 {
-	_nick = nick;
+	this->_nick = nick;
 }
 
 void Client::setUser(std::string user)
 {
-	_user = user;
+	this->_user = user;
 }
 
 void Client::setRegistered(bool reg)
 {
-	_registered = reg;
+	this->_registered = reg;
 }
 
 bool Client::tryToRegister(std::vector<std::string> registered)
 {
+	std::cout << "DENTRO DE TRY TO REGISTER" << std::endl;
+	std::cout << "BOOL: " << this->getRegistered() <<std::endl;
+	std::cout << "USER: " << this->getUser() << std::endl;
+	std::cout << "NICK: " << this->getNick() << std::endl;
+	std::cout << "PASS: " << this->getPass() << std::endl;
+	std::cout << "DENTRO DE TRY TO REGISTER" << std::endl;
 	if (this->getRegistered())
 		return (false);
 	if (_user.empty() || _nick.empty() || _pass.empty())
@@ -72,7 +80,7 @@ bool Client::tryToRegister(std::vector<std::string> registered)
 		return (false);
 
 	std::cout << "Cliente [" << _nick << "] Registrado" << std::endl;
-	_registered = true;
+	setRegistered(true);
 	return true;
 }
 
@@ -80,6 +88,12 @@ void Client::quitClient()
 {
 	close(_poll_client.fd);
 	std::cout << "DESCONECTAMOS CLIENTE ["<< _nick << "]" << std::endl;
+}
+
+void Client::sendToClient(std::string &msg)
+{
+	send(this->_poll_client.fd, msg.c_str(), msg.length(), 0);
+
 }
 
 std::ostream &operator<<(std::ostream &os, const Client &c)

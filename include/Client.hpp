@@ -41,6 +41,8 @@ public:
 	void setRegistered(bool reg);
 
 	bool tryToRegister(std::vector<std::string> registered);
+	void sendToClient(std::string &msg);
+
 
 	void quitClient();
 };

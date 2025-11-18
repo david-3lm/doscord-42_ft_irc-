@@ -106,8 +106,12 @@ void Server::register_clients()
 
 	while (i < _clients.size() && _clients_to_auth)
 	{
+		Client c = _clients[i];
+		std::cout << i << " - Clientes registrados:  " << _registered_clients.size()<< std::endl;
 		if (_clients[i].tryToRegister(_registered_clients))
 		{
+			std::cout << "Try to register" << std::endl;
+
 			nick = _clients[i].getNick();
 			_registered_clients.push_back(nick);
 			_clients_to_auth--;
@@ -136,7 +140,7 @@ void Server::register_clients()
 			" ⠀⠀⠀⠀⠀⠀⠀⠀⠀✨ **Conectado!!** ✨⠀⠀⠀⠀⠀⠀⠀⠀⠀\r\n";
 
 			send(_polls[i+1].fd, art.c_str(), art.length(), 0);
-
+			//_clients[i].sendToClient(art);
 		}
 		i++;
 	}
@@ -185,7 +189,6 @@ void Server::poll_client(size_t p_idx)
 	read = recv(_polls[p_idx].fd, _buff, 4096, 0);
 	if (read <= 0)
 	{
-		//TODO: TRALALERO
 		if (read == -1)
 			std::cerr << RED << "Error trying to read" << NO_COLOR << std::endl;
 		std::cout << CYAN << "cerramos clientes" << NO_COLOR << std::endl;
