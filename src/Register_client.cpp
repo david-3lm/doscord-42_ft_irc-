@@ -35,7 +35,7 @@ void Server::reg_nick(std::string line, size_t pos, size_t cl_idx)
 
 void Server::reg_user(std::string line, size_t pos, size_t cl_idx)
 {
-	std::string user = line.substr(pos + 1, pos + line.find(' ', pos));
+	std::string user = line.substr(pos + 1, line.find(' ', pos + 1) - pos - 1);
 	//TODO: ERRORES
 	if (user.empty())
 	{
