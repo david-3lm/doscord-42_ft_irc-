@@ -64,7 +64,7 @@ void Client::setRegistered(bool reg)
 	this->_registered = reg;
 }
 
-bool Client::tryToRegister(std::vector<std::string> registered)
+bool Client::tryToRegister(std::deque<std::string> registered)
 {
 	std::cout << "DENTRO DE TRY TO REGISTER" << std::endl;
 	std::cout << "POLLFD: " << this->_poll_client.fd <<std::endl;

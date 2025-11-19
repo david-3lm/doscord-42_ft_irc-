@@ -13,7 +13,7 @@
 #include <string>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <vector>
+#include <deque>
 
 class Client 
 {
@@ -40,7 +40,7 @@ public:
 	void setUser(std::string user);
 	void setRegistered(bool reg);
 
-	bool tryToRegister(std::vector<std::string> registered);
+	bool tryToRegister(std::deque<std::string> registered);
 	void sendToClient(std::string &msg);
 
 

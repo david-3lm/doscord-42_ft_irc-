@@ -29,7 +29,7 @@
 #include <string>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <vector>
+#include <deque>
 #include <Client.hpp>
 #include <Server.hpp>
 
@@ -61,9 +61,9 @@ private:
 	size_t _clients_to_auth;
 	char _buff[4096];
 
-	std::vector<struct pollfd> _polls;
-	std::vector<Client> _clients;
-	std::vector<std::string> _registered_clients;
+	std::deque<struct pollfd> _polls;
+	std::deque<Client> _clients;
+	std::deque<std::string> _registered_clients;
 
 	void init();
 	void server_loop();

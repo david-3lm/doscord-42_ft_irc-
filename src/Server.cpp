@@ -106,10 +106,9 @@ void Server::register_clients()
 
 	while (i < _clients.size() && _clients_to_auth)
 	{
-		Client c = _clients[i];
 		std::cout << i << " - Clientes registrados:  " << _registered_clients.size()<< std::endl;
 		std::cout << "i = " << i << "[" << _clients[i].getNick() << "]" << "[" << _clients[i].getUser() << "]" << "[" << _clients[i].getPass() << "]" << "[" << _clients[i].getRegistered() << "]" << std::endl;
-		/*if (_clients[i].tryToRegister(_registered_clients))
+		if (_clients[i].tryToRegister(_registered_clients))
 		{
 			std::cout << "Try to register" << std::endl;
 
@@ -142,7 +141,7 @@ void Server::register_clients()
 
 			send(_polls[i+1].fd, art.c_str(), art.length(), 0);
 			//_clients[i].sendToClient(art);
-		}*/
+		}
 		i++;
 	}
 }
@@ -201,7 +200,7 @@ void Server::poll_client(size_t p_idx)
 		else
 		{
 			std::string nick = _clients[p_idx - 1].getNick();
-			std::vector<std::string>::iterator it = std::find(_registered_clients.begin(), _registered_clients.end(), nick);
+			std::deque<std::string>::iterator it = std::find(_registered_clients.begin(), _registered_clients.end(), nick);
 			if (it != _registered_clients.end())
 				_registered_clients.erase(it);
 			//TODO: eliminar de los canales
