@@ -108,7 +108,8 @@ void Server::register_clients()
 	{
 		Client c = _clients[i];
 		std::cout << i << " - Clientes registrados:  " << _registered_clients.size()<< std::endl;
-		if (_clients[i].tryToRegister(_registered_clients))
+		std::cout << "i = " << i << "[" << _clients[i].getNick() << "]" << "[" << _clients[i].getUser() << "]" << "[" << _clients[i].getPass() << "]" << "[" << _clients[i].getRegistered() << "]" << std::endl;
+		/*if (_clients[i].tryToRegister(_registered_clients))
 		{
 			std::cout << "Try to register" << std::endl;
 
@@ -141,7 +142,7 @@ void Server::register_clients()
 
 			send(_polls[i+1].fd, art.c_str(), art.length(), 0);
 			//_clients[i].sendToClient(art);
-		}
+		}*/
 		i++;
 	}
 }
@@ -178,7 +179,9 @@ void Server::poll_server()
 	new_poll.revents = 0;
 
 	_polls.push_back(new_poll);
+	std::cout << RED;
 	_clients.push_back(Client(new_poll, addr));
+	std::cout << RED << "clients size = [" << _clients.size() << "]" << NO_COLOR << std::endl;
 	_clients_to_auth++;
 }
 

@@ -2,7 +2,8 @@
 
 Client::Client(pollfd poll, sockaddr addr) : _poll_client(poll), _addr(addr) 
 {
-
+	
+	std::cout << "Cliente creado con fd: " << _poll_client.fd << std::endl;
 	_registered = false;
 	
 }
@@ -66,6 +67,7 @@ void Client::setRegistered(bool reg)
 bool Client::tryToRegister(std::vector<std::string> registered)
 {
 	std::cout << "DENTRO DE TRY TO REGISTER" << std::endl;
+	std::cout << "POLLFD: " << this->_poll_client.fd <<std::endl;
 	std::cout << "BOOL: " << this->getRegistered() <<std::endl;
 	std::cout << "USER: " << this->getUser() << std::endl;
 	std::cout << "NICK: " << this->getNick() << std::endl;
@@ -80,7 +82,7 @@ bool Client::tryToRegister(std::vector<std::string> registered)
 		return (false);
 
 	std::cout << "Cliente [" << _nick << "] Registrado" << std::endl;
-	setRegistered(true);
+	this->setRegistered(true);
 	return true;
 }
 
