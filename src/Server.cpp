@@ -139,6 +139,8 @@ void Server::register_clients()
 			"\r\n"
 			" ⠀⠀⠀⠀⠀⠀⠀⠀⠀✨ **Conectado!!** ✨⠀⠀⠀⠀⠀⠀⠀⠀⠀\r\n";
 
+
+
 			send(_polls[i+1].fd, art.c_str(), art.length(), 0);
 			//_clients[i].sendToClient(art);
 		}
