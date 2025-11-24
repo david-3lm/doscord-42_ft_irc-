@@ -78,6 +78,16 @@ void Channel::kickMember(std::string member)
 	it = std::find(_members.begin(), _members.end(), member);
 	if (it != _members.end())
 		_members.erase(it);
+	kickOperator(member);
+}
+
+bool Channel::isMember(std::string member)
+{
+	std::deque<std::string>::iterator it;
+	it = std::find(_members.begin(), _members.end(), member);
+	if (it != _members.end())
+		return (true);
+	return (false);
 }
 
 void Channel::addOperator(std::string member)
@@ -91,4 +101,13 @@ void Channel::kickOperator(std::string member)
 	it = std::find(_operators.begin(), _operators.end(), member);
 	if (it != _operators.end())
 		_operators.erase(it);
+}
+
+bool Channel::isOperator(std::string member)
+{
+	std::deque<std::string>::iterator it;
+	it = std::find(_operators.begin(), _operators.end(), member);
+	if (it != _operators.end())
+		return (true);
+	return (false);
 }

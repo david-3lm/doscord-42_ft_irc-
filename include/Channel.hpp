@@ -39,5 +39,8 @@ public:
 	void kickMember(std::string);
 	void kickOperator(std::string);
 
+	bool isMember(std::string);
+	bool isOperator(std::string);
+
 };
 
