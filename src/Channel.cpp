@@ -24,17 +24,17 @@ Channel &Channel::operator=(const Channel &other)
 
 std::string Channel::getName()
 {
-	return std::string();
+	return this->_channel_name;
 }
 
 std::string Channel::getPass()
 {
-	return std::string();
+	return this->_channel_pass;
 }
 
 std::string Channel::getTopic()
 {
-	return std::string();
+	return this->_channel_topic;
 }
 
 size_t Channel::getLimit()
@@ -86,8 +86,8 @@ bool Channel::isMember(std::string member)
 	std::deque<std::string>::iterator it;
 	it = std::find(_members.begin(), _members.end(), member);
 	if (it != _members.end())
-		return (true);
-	return (false);
+		return (false);
+	return (true);
 }
 
 void Channel::addOperator(std::string member)
@@ -108,6 +108,6 @@ bool Channel::isOperator(std::string member)
 	std::deque<std::string>::iterator it;
 	it = std::find(_operators.begin(), _operators.end(), member);
 	if (it != _operators.end())
-		return (true);
-	return (false);
+		return (false);
+	return (true);
 }

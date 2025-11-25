@@ -212,8 +212,11 @@ void Server::poll_client(size_t p_idx)
 		return;
 	}
 	_polls[p_idx].revents = 0;
+	
+	std::string buf(_buff);
+	buf = buf.substr(0, buf.find("\r\n"));
 	std::cout << BLUE << p_idx << " <=pollfd | Message from client: "<< _clients[p_idx - 1] << "\n"
-		<< "read => " << read << "\n" << "[" << _buff << " ]" << NO_COLOR << std::endl;
+		<< "read => " << read << "\n" << "[" << buf << " ]" << NO_COLOR << std::endl;
 	parse_buff(std::string(_buff), (p_idx - 1));
 	std::fill_n(_buff, read, 0);
 }
@@ -237,7 +240,7 @@ void Server::parse_buff(std::string buff, size_t cl_idx)
 		else if (com == "USER")
 			reg_user(line, pos, cl_idx);
 		else if (com == "JOIN")
-			ch_join(line, pos, cl_idx);
+			ch_join(&line[pos + 1], cl_idx);
 		else if (com == "KICK")
 			ch_kick(line, pos, cl_idx);
 		else if (com == "INVITE")
@@ -246,7 +249,20 @@ void Server::parse_buff(std::string buff, size_t cl_idx)
 			ch_topic(line, pos, cl_idx);
 		else if (com == "MODE")
 			ch_mode(line, pos, cl_idx);
+		else if (com == "PRIVMSG")
+			ch_msg(&line[pos + 1], cl_idx); 
 	}
 	
 	
+}
+
+Channel Server::find_channel(std::string name)
+{
+	for (size_t i = 0; i < _channels.size(); i++)
+	{
+		if (_channels[i].getName() == name)
+			return _channels[i];
+	}
+	
+	return Channel(name, "");
 }

@@ -32,6 +32,7 @@
 #include <deque>
 #include <Client.hpp>
 #include <Server.hpp>
+#include <Channel.hpp>
 
 
 template<class T> std::string	to_string(const T& value)
@@ -64,6 +65,7 @@ private:
 	std::deque<struct pollfd> _polls;
 	std::deque<Client> _clients;
 	std::deque<std::string> _registered_clients;
+	std::deque<Channel> _channels;
 
 	void init();
 	void server_loop();
@@ -78,12 +80,14 @@ private:
 	void reg_user(std::string line, size_t pos, size_t cl_idx);
 
 	//Channel commands
-	void ch_join(std::string line, size_t pos, size_t cl_idx);
+	void ch_join(std::string line, size_t cl_idx);
 	void ch_kick(std::string line, size_t pos, size_t cl_idx);
 	void ch_invite(std::string line, size_t pos, size_t cl_idx);
 	void ch_topic(std::string line, size_t pos, size_t cl_idx);
 	void ch_mode(std::string line, size_t pos, size_t cl_idx);
-	
+	void ch_msg(std::string line, size_t cl_idx);
+
+	Channel find_channel(std::string name);
 public:
     Server(int port, std::string pass);
     ~Server();
