@@ -18,6 +18,13 @@ Channel::Channel(const Channel &other)
 Channel &Channel::operator=(const Channel &other) 
 {
     if (this != &other) {
+		_channel_name = other._channel_name;
+		_channel_pass = other._channel_pass;
+		_channel_topic = other._channel_topic;
+		_members = other._members;
+		_operators = other._members;
+		_channel_limit = other._channel_limit;
+		_invite_mode = other._invite_mode;
     }
     return *this;
 }

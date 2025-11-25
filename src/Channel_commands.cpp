@@ -67,11 +67,31 @@ void Server::ch_invite(std::string line, size_t pos, size_t cl_idx)
 	*/
 }
 
-void Server::ch_topic(std::string line, size_t pos, size_t cl_idx)
+void Server::ch_topic(std::string line, size_t cl_idx)
 {
 	/*
 	/topic this is the new channel topic
 	*/
+	std::string chan;
+	size_t pos;
+	std::string topic;
+	std::string complete_msg;
+
+	std::cout << GREEN << "Entro ch_topic" << NO_COLOR << std::endl;
+	chan = line.substr(0, line.find(" "));
+	pos = line.find(":") + 1;
+	topic = line.substr(pos, line.find("\r"));
+
+	Channel c = find_channel(chan);
+
+	complete_msg = ":doscord TOPIC " + chan + " :" + topic + "\r\n";
+	for (size_t i = 0; i < _clients.size(); i++)
+	{
+		if (c.isMember(_clients[i].getNick()))
+			send(_polls[i + 1].fd, complete_msg.c_str(), complete_msg.size(), 0);
+	}
+	
+
 }
 
 void Server::ch_mode(std::string line, size_t pos, size_t cl_idx)
@@ -101,19 +121,19 @@ void Server::ch_msg(std::string line, size_t cl_idx)
 	msg = line.substr(pos, line.find("\r"));
 
 	std::cout << YELLOW << "CHAN = -" << chan << "- msg = -" << msg << "-" << NO_COLOR << std::endl;
-	// Channel c = find_channel(chan);
-	int chIdx;
+	Channel c = find_channel(chan);
+	//int chIdx;
 
-	for (int i = 0; i< _channels.size(); i++)
+	/*for (int i = 0; i< _channels.size(); i++)
 	{
 		if(_channels[i].getName() == chan)
 			chIdx = i;
-	}
+	}*/
 
 	for (size_t i = 0; i < _clients.size(); i++)
 	{
 		std::cout << "Envio msg a: -" << _clients[i].getNick() << "-" << std::endl;
-		if (_channels[chIdx].isMember(_clients[i].getNick()) && i != cl_idx)
+		if (c.isMember(_clients[i].getNick()) && i != cl_idx)
 		{
 			complete_msg = ":" + _clients[cl_idx].getNick() + " " + "PRIVMSG" + " "+ chan + " " + msg + "\r\n";
 			std::cout << "Complete = " << complete_msg << std::endl;
