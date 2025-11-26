@@ -3,6 +3,7 @@
 
 Channel::Channel(const std::string &name, const std::string &pass) : _channel_name(name), _channel_pass(pass)
 {
+	_invite_mode = false;
 }
 
 Channel::~Channel() 
@@ -42,6 +43,11 @@ std::string Channel::getPass()
 std::string Channel::getTopic()
 {
 	return this->_channel_topic;
+}
+
+std::deque<std::string> Channel::getMembers()
+{
+	return this->_members;
 }
 
 size_t Channel::getLimit()

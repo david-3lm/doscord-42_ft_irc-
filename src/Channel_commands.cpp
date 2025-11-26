@@ -5,23 +5,79 @@ void Server::ch_join(std::string line, size_t cl_idx)
 	/*TODO: CREAR SERVER revisando que empiece por #
 		/join #channel
 	*/
+	std::string chan;
+	std::string pass;
+	std::string msg;
+	size_t pos_sp;
+	pos_sp = line.find(" ");
+	if (pos_sp == line.npos)
+	{
+		chan = line.substr(0, line.find("\r"));
+		pass = "";
+		std::cout << YELLOW << "no pass" << NO_COLOR << std::endl;
+	}
+	else
+	{
+		chan = line.substr(0, line.find(" "));
+		pass = line.substr(pos_sp + 1, line.find("\r") - (pos_sp + 1));
+		std::cout << YELLOW << "Pass = -" << pass << "-" << NO_COLOR << std::endl;
+	}
 
-	
-	std::string chan = line.substr(0, line.find("\r"));
-	std::cout << YELLOW << "JOIN\nEn line : [" << chan << "]" << NO_COLOR << std::endl;
-	//TODO: no # no win
+
+	if (chan.empty())
+	{
+		std::cout << RED << "Not parameters" << NO_COLOR << std::endl;
+		msg = "doscord.irc 461 " + chan + ":Empty parameter\r\n";
+		return ;
+	}
+	if (chan[0] != '#')
+	{
+		std::cout << RED << "Bad Channel mask (#)" << NO_COLOR << std::endl;
+		msg = ":doscord.irc 476 " + chan + " :Bad Channel Mask\r\n";
+		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
+	if (!_clients[cl_idx].getRegistered())
+	{
+		std::cout << RED << "Not registered" << NO_COLOR << std::endl;
+		msg = "doscord.irc 451 " + chan + ":Client not registered\r\n" ;
+		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
+
 	Channel c = find_channel(chan);
 	
+	// if (c.getMembers().size() == c.getLimit())
+	// {
+	// 	std::cout << RED << chan << "is full\r\n";
+	// 	msg = "doscrod.irc 471 " + chan + ":Channel [" + chan + "] is full\r\n";
+	// 	send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+	// 	return ;
+	// }
+	std::cout << "pass = -" << pass << "- ch_pass = -" << c.getPass() << "-" << std::endl;
+	if (!pass.empty() && !c.getPass().empty() && pass != c.getPass())
+	{
+		std::cout << RED << "Wrong Password for " << chan << NO_COLOR << std::endl;
+		msg = "doscord.irc 475" + chan + ":Wrong Password. Try again\r\n";
+		send(_polls[cl_idx].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
+	if (c.getIniviteMode())
+	{
+		std::cout << RED << chan << " in only invitation mode" << NO_COLOR << std::endl;
+		msg = "doscord.irc 473 " + chan + " :In Only invitation mode\r\n";
+		send(_polls[cl_idx].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
 	if (!c.isMember(_clients[cl_idx].getNick()))
 	{
 		c.addMember(_clients[cl_idx].getNick());
 		c.addOperator(_clients[cl_idx].getNick());
 		_channels.push_back(c);
 	}
-
-	std::string msg = ":" + _clients[cl_idx].getNick() + " JOIN " + c.getName() + "\r\n";
+	msg = ":" + _clients[cl_idx].getNick() + " JOIN " + c.getName() + "\r\n";
+	c.setPass(pass);
 	send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
-	std::cout << "CHANNEL CREADO CON EL NOMBRE "<< chan<< std::endl;
 }
 
 void Server::ch_kick(std::string line, size_t pos, size_t cl_idx)

@@ -5,6 +5,7 @@
 #include <string>
 #include <algorithm>
 #include <deque>
+
 class Channel 
 {
 private:
@@ -25,6 +26,7 @@ public:
 	std::string getName();
 	std::string getPass();
 	std::string getTopic();
+	std::deque<std::string> getMembers();
 	size_t getLimit();
 	bool getIniviteMode();
 
