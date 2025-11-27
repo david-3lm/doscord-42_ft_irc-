@@ -1,8 +1,10 @@
 #include "Channel.hpp"
 
 
-Channel::Channel(const std::string &name, const std::string &pass) : _channel_name(name), _channel_pass(pass)
+Channel::Channel(const std::string &name, const std::string &pass)
 {
+	_channel_name = name;
+	_channel_pass = pass;
 	_invite_mode = false;
 }
 
@@ -60,6 +62,11 @@ bool Channel::getIniviteMode()
 	return _invite_mode;
 }
 
+void Channel::setName(std::string name)
+{
+	_channel_name = name;
+}
+
 void Channel::setPass(std::string pass)
 {
 	_channel_pass = pass;
@@ -99,8 +106,8 @@ bool Channel::isMember(std::string member)
 	std::deque<std::string>::iterator it;
 	it = std::find(_members.begin(), _members.end(), member);
 	if (it != _members.end())
-		return (false);
-	return (true);
+		return (true);
+	return (false);
 }
 
 void Channel::addOperator(std::string member)

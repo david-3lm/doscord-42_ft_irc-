@@ -87,7 +87,11 @@ private:
 	void ch_mode(std::string line, size_t pos, size_t cl_idx);
 	void ch_msg(std::string line, size_t cl_idx);
 
-	Channel find_channel(std::string name);
+	// Channel find_channel(std::string name);
+	Channel &find_channel(std::string name);
+	size_t find_channel_it(std::string name);
+	bool exist_channel(std::string name);
+
 public:
     Server(int port, std::string pass);
     ~Server();

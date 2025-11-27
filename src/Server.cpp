@@ -73,6 +73,11 @@ void Server::server_loop()
 			std::cout << "Name (" << i << ")" << _registered_clients[i] << std::endl;
 		std::cout << "——————————————————————————————————" << NO_COLOR << std::endl;
 
+		std::cout << GREEN << "————————————— CHANNELs "<< _channels.size() <<" ————————————" << std::endl;
+		for (size_t i = 0; i < _channels.size(); i++)
+			std::cout << "Name (" << i << ")" << _channels[i].getName() << std::endl;
+		std::cout << "——————————————————————————————————" << NO_COLOR << std::endl;
+
 		n_polls = poll(&_polls[0], _polls.size(), 7000);
 		if (n_polls == -1)
 			std::cerr << RED << "Error with the poll" << NO_COLOR <<std::endl;
@@ -256,13 +261,40 @@ void Server::parse_buff(std::string buff, size_t cl_idx)
 	
 }
 
-Channel Server::find_channel(std::string name)
+Channel &Server::find_channel(std::string name)
+{
+	for (size_t i = 0; i < _channels.size(); i++)
+	{
+		std::cout << MAGENTA << "Channel [" << i << "] name = -" << _channels[i].getName() << "-" << NO_COLOR << std::endl;
+		if (_channels[i].getName() == name)
+			return _channels[i];
+	}
+	std::cout << MAGENTA << "CREAMOS CON NOMBRE => " << name << NO_COLOR << std::endl;
+	_channels.push_back(Channel(name, ""));
+	_channels.back().setName(name);
+	std::cout << MAGENTA << "CREAMOS CON NOMBRE => " << _channels.back().getName() << NO_COLOR << std::endl;
+	return _channels.back();
+}
+
+size_t Server::find_channel_it(std::string name)
+{
+	size_t i = 0;
+	for (; i < _channels.size(); i++)
+	{
+		std::cout << MAGENTA << "Channel [" << i << "] name = -" << _channels[i].getName() << "-" << NO_COLOR << std::endl;
+		if (_channels[i].getName() == name)
+			return i;
+	}
+	std::cout << "FIND CHANNEL I = " << i << std::endl;
+	return i;
+}
+
+bool Server::exist_channel(std::string name)
 {
 	for (size_t i = 0; i < _channels.size(); i++)
 	{
 		if (_channels[i].getName() == name)
-			return _channels[i];
+			return true;
 	}
-	
-	return Channel(name, "");
+	return false;
 }

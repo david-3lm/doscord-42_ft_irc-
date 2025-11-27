@@ -30,6 +30,7 @@ public:
 	size_t getLimit();
 	bool getIniviteMode();
 
+	void setName(std::string);
 	void setPass(std::string);
 	void setTopic(std::string);
 	void setLimit(size_t);
