@@ -88,7 +88,7 @@ private:
 	void ch_msg(std::string line, size_t cl_idx);
 
 	// Channel find_channel(std::string name);
-	Channel &find_channel(std::string name);
+	Channel find_channel(std::string name);
 	size_t find_channel_it(std::string name);
 	bool exist_channel(std::string name);
 

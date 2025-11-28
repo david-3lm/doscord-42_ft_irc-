@@ -16,6 +16,7 @@ Channel::~Channel()
 Channel::Channel(const Channel &other)
 {
     (void)other;
+	*this = other;
 }
 
 Channel &Channel::operator=(const Channel &other) 

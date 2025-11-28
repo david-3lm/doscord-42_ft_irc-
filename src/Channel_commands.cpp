@@ -45,17 +45,17 @@ void Server::ch_join(std::string line, size_t cl_idx)
 		return ;
 	}
 
-	// Channel &c = find_channel(chan);
+	Channel c = find_channel(chan);
 	// Channel c(chan, pass);
 
-	size_t ch = find_channel_it(chan);
+	//size_t ch = find_channel_it(chan);
 	if (!exist_channel(chan))
 	{
 		std::cout << RED << "NO EXISTE" << NO_COLOR << std::endl;
 		// if (!pass.empty())
 		// 	c.setPass(pass);
-		// _channels.push_back(c);
-		_channels.back().setPass(pass);
+		_channels.push_back(c);
+		//_channels.back().setPass(pass);
 		
 		std::cout << MAGENTA << "c getname = -" << c.getName() << "- Channels = -" << _channels.back().getName() <<"-" << NO_COLOR<<std::endl;
 	}
@@ -117,7 +117,7 @@ void Server::ch_kick(std::string line, size_t pos, size_t cl_idx)
 	std::string ban =
 	"⡶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⢶\r\n"
 	"⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰\r\n"
-	"⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ ⠀⠀⠀⠀⠀⠀    ⠀⠀⠀ ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸\r\n"
+	"⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ ⠀                ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸\r\n"
 	"⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⡿⠿⠿⣿⣶⡄⠀⠀⠀⣼⣿⣿⣧⠀⠀⠀⠀⣿⣿⣿⡄⠀⠀⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸\r\n"
 	"⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣇⡀⣀⣼⣿⠇⠀⠀⢰⣿⡇⢹⣿⣆⠀⠀⠀⣿⡟⢻⣿⣆⠀⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸\r\n"
 	"⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⡿⠛⠻⢿⣷⣄⠀⢀⣿⣿⠀⠀⣿⣿⡄⠀⠀⣿⣷⠀⢻⣿⣆⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸\r\n"
@@ -163,7 +163,7 @@ void Server::ch_topic(std::string line, size_t cl_idx)
 	pos = line.find(":") + 1;
 	topic = line.substr(pos, line.find("\r"));
 
-	Channel &c = find_channel(chan);
+	Channel c = find_channel(chan);
 
 	complete_msg = ":doscord TOPIC " + chan + " :" + topic + "\r\n";
 	for (size_t i = 0; i < _clients.size(); i++)
@@ -202,7 +202,7 @@ void Server::ch_msg(std::string line, size_t cl_idx)
 	msg = line.substr(pos, line.find("\r"));
 
 	std::cout << YELLOW << "CHAN = -" << chan << "- msg = -" << msg << "-" << NO_COLOR << std::endl;
-	Channel &c = find_channel(chan);
+	Channel c = find_channel(chan);
 	//int chIdx;
 
 	/*for (int i = 0; i< _channels.size(); i++)

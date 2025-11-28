@@ -14,12 +14,18 @@ Client::~Client()
 
 Client::Client(const Client &other) 
 {
-    (void)other;
+	*this = other;
 }
 
 Client &Client::operator=(const Client &other) 
 {
     if (this != &other) {
+		_poll_client = other._poll_client;
+		_addr = other._addr;
+		_pass = other._pass;
+		_nick = other._nick;
+		_user = other._user;
+		_registered = other._registered;
     }
     return *this;
 }

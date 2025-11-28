@@ -261,7 +261,7 @@ void Server::parse_buff(std::string buff, size_t cl_idx)
 	
 }
 
-Channel &Server::find_channel(std::string name)
+Channel Server::find_channel(std::string name)
 {
 	for (size_t i = 0; i < _channels.size(); i++)
 	{
@@ -269,11 +269,11 @@ Channel &Server::find_channel(std::string name)
 		if (_channels[i].getName() == name)
 			return _channels[i];
 	}
-	std::cout << MAGENTA << "CREAMOS CON NOMBRE => " << name << NO_COLOR << std::endl;
-	_channels.push_back(Channel(name, ""));
-	_channels.back().setName(name);
-	std::cout << MAGENTA << "CREAMOS CON NOMBRE => " << _channels.back().getName() << NO_COLOR << std::endl;
-	return _channels.back();
+	// std::cout << MAGENTA << "CREAMOS CON NOMBRE => " << name << NO_COLOR << std::endl;
+	// _channels.push_back(Channel(name, ""));
+	// _channels.back().setName(name);
+	// std::cout << MAGENTA << "CREAMOS CON NOMBRE => " << _channels.back().getName() << NO_COLOR << std::endl;
+	return Channel(name, "");
 }
 
 size_t Server::find_channel_it(std::string name)
