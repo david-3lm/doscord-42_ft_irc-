@@ -91,6 +91,7 @@ private:
 	Channel &find_channel(std::string name);
 	size_t find_channel_it(std::string name);
 	bool exist_channel(std::string name);
+	size_t search_id_nick(std::string nick);
 
 public:
     Server(int port, std::string pass);

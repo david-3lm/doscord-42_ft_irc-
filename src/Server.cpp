@@ -296,3 +296,15 @@ bool Server::exist_channel(std::string name)
 	}
 	return false;
 }
+
+size_t Server::search_id_nick(std::string nick)
+{
+	for (size_t i = 0; i < _clients.size(); i++)
+	{
+		if (_clients[i].getNick() == nick && _clients[i].getRegistered())
+		{
+			return i;
+		}
+	}
+	return _clients.size();
+}
