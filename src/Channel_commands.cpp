@@ -44,8 +44,9 @@ void Server::ch_join(std::string line, size_t cl_idx)
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
-
-	Channel c = find_channel(chan);
+	Channel &c = find_channel(chan);
+	
+	std::cout << RED<< c << NO_COLOR <<std::endl;
 	// Channel c(chan, pass);
 
 	//size_t ch = find_channel_it(chan);
@@ -56,14 +57,8 @@ void Server::ch_join(std::string line, size_t cl_idx)
 		// 	c.setPass(pass);
 		_channels.push_back(c);
 		//_channels.back().setPass(pass);
-		
+		c = _channels.back();
 		std::cout << MAGENTA << "c getname = -" << c.getName() << "- Channels = -" << _channels.back().getName() <<"-" << NO_COLOR<<std::endl;
-	}
-	else
-	{
-		std::cout << RED << "ESISTE" << NO_COLOR << std::endl;
-
-		//c = find_channel(chan);
 	}
 
 		std::cout << GREEN << "————————————— CHANNELs "<< _channels.size() <<" ————————————" << std::endl;
@@ -72,7 +67,6 @@ void Server::ch_join(std::string line, size_t cl_idx)
 		std::cout << "——————————————————————————————————" << NO_COLOR << std::endl;
 
 	std::cout << CYAN << "chan = -" << chan << "- c name = -" << c.getName() << "-" << NO_COLOR << std::endl;
-	
 	// if (c.getMembers().size() == c.getLimit())
 	// {
 	// 	std::cout << RED << chan << "is full\r\n";
@@ -97,9 +91,11 @@ void Server::ch_join(std::string line, size_t cl_idx)
 	}
 	if (!c.isMember(_clients[cl_idx].getNick()))
 	{
+		std::cout << RED << "NO ES MIEMBRO..... AÑADO" << _clients[cl_idx].getNick() << NO_COLOR << std::endl;
 		c.addMember(_clients[cl_idx].getNick());
 		c.addOperator(_clients[cl_idx].getNick());
 	}
+
 	msg = ":" + _clients[cl_idx].getNick() + " JOIN " + c.getName() + "\r\n";
 	std::cout << CYAN << "c pass = -" << c.getPass() << "-" << NO_COLOR << std::endl;
 	send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
@@ -163,7 +159,7 @@ void Server::ch_topic(std::string line, size_t cl_idx)
 	pos = line.find(":") + 1;
 	topic = line.substr(pos, line.find("\r"));
 
-	Channel c = find_channel(chan);
+	Channel &c = find_channel(chan);
 
 	complete_msg = ":doscord TOPIC " + chan + " :" + topic + "\r\n";
 	for (size_t i = 0; i < _clients.size(); i++)
@@ -202,7 +198,8 @@ void Server::ch_msg(std::string line, size_t cl_idx)
 	msg = line.substr(pos, line.find("\r"));
 
 	std::cout << YELLOW << "CHAN = -" << chan << "- msg = -" << msg << "-" << NO_COLOR << std::endl;
-	Channel c = find_channel(chan);
+	Channel &c = find_channel(chan);
+	std::cout << c << std::endl;
 	//int chIdx;
 
 	/*for (int i = 0; i< _channels.size(); i++)

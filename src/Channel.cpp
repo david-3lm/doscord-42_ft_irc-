@@ -15,7 +15,6 @@ Channel::~Channel()
 
 Channel::Channel(const Channel &other)
 {
-    (void)other;
 	*this = other;
 }
 
@@ -26,39 +25,39 @@ Channel &Channel::operator=(const Channel &other)
 		_channel_pass = other._channel_pass;
 		_channel_topic = other._channel_topic;
 		_members = other._members;
-		_operators = other._members;
+		_operators = other._operators;
 		_channel_limit = other._channel_limit;
 		_invite_mode = other._invite_mode;
     }
     return *this;
 }
 
-std::string Channel::getName()
+std::string Channel::getName() const
 {
 	return this->_channel_name;
 }
 
-std::string Channel::getPass()
+std::string Channel::getPass() const
 {
 	return this->_channel_pass;
 }
 
-std::string Channel::getTopic()
+std::string Channel::getTopic() const
 {
 	return this->_channel_topic;
 }
 
-std::deque<std::string> Channel::getMembers()
+std::deque<std::string> Channel::getMembers() const
 {
 	return this->_members;
 }
 
-size_t Channel::getLimit()
+size_t Channel::getLimit() const
 {
 	return _channel_limit;
 }
 
-bool Channel::getIniviteMode()
+bool Channel::getIniviteMode() const
 {
 	return _invite_mode;
 }
@@ -131,4 +130,15 @@ bool Channel::isOperator(std::string member)
 	if (it != _operators.end())
 		return (false);
 	return (true);
+}
+
+std::ostream &operator<<(std::ostream &os, const Channel &c)
+{
+	os << "***Información importante del canal " << c.getName() << "***"<< std::endl;
+	os << "\n\t Miembros: " << std::endl; 
+	for (size_t i = 0; i < c.getMembers().size(); i++)
+	{
+		os << "\n\t\t -" << c.getMembers()[i] <<"-" << std::endl; 
+	}
+	return os;
 }
