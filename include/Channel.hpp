@@ -5,6 +5,7 @@
 #include <string>
 #include <algorithm>
 #include <deque>
+#include <iostream>
 
 class Channel 
 {
@@ -23,12 +24,12 @@ public:
     ~Channel();
     Channel &operator=(const Channel &other);
 
-	std::string getName();
-	std::string getPass();
-	std::string getTopic();
-	std::deque<std::string> getMembers();
-	size_t getLimit();
-	bool getIniviteMode();
+	std::string getName()const;
+	std::string getPass()const;
+	std::string getTopic()const;
+	std::deque<std::string> getMembers()const;
+	size_t getLimit()const;
+	bool getIniviteMode()const;
 
 	void setName(std::string);
 	void setPass(std::string);
@@ -46,4 +47,7 @@ public:
 	bool isOperator(std::string);
 
 };
+
+std::ostream &operator<<(std::ostream &os, const Channel &c);
+
 
