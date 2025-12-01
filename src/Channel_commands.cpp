@@ -122,11 +122,11 @@ void Server::ch_kick(std::string line, size_t cl_idx)
 	if (pos_dd != std::string::npos)
 	{
 		nick = line.substr(line.find(' ') + 1, pos_dd - 2);
-		reason = line.substr(pos_dd, (line.size() - pos_dd));
+		reason = line.substr(pos_dd + 1, line.find("\r") - (pos_dd + 1));
 	}
 	else
 	{
-		nick = line.substr(line.find(' ') + 1, line.size() - line.find(' ') + 1);
+		nick = line.substr(line.find(' ') + 1, line.find('\r'));
 		reason = "";
 	}
 
@@ -183,7 +183,7 @@ void Server::ch_kick(std::string line, size_t cl_idx)
 	"⠀⠀⠀⠀⠀⠀⠀⠘⣿⣧⡀⠀⠀⣿⠀⠈⠉⠛⠛⠿⠿⠿⠿⠛⠛⠛⠛⠛⠛⠛⠋⠉⠀⠀⠀⠀⠈⠛⢾⣢⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀\r\n"
 	"⠀⠀⠀⠀⠀⠀⠀⠀⣾⡿⢿⣦⣴⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⠄⠀⠀⠀⠀⠀⠀⠀⠀\r\n";
 
-	msg = ":" + nick + " KICK " + c.getName();
+	msg = ":doscord.irc KICK " + c.getName() + " " + nick + " " + reason + "\r\n";
 	send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 	msg = ":" + nick + ban;
 	send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
