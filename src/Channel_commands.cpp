@@ -105,7 +105,7 @@ void Server::ch_join(std::string line, size_t cl_idx)
 	send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 }
 
-void Server::ch_kick(std::string line, size_t pos, size_t cl_idx)
+void Server::ch_kick(std::string line, size_t cl_idx)
 {
 	/*TODO:
 	echar a una persona de un canal
@@ -113,6 +113,29 @@ void Server::ch_kick(std::string line, size_t pos, size_t cl_idx)
 	que existe el canal	
 	*/
 
+	std::string msg;
+	std::string chan;
+	std::string nick;
+	std::string reason;
+	size_t pos_dd;
+
+	chan = line.substr(0, line.find(' '));
+	pos_dd = line.find(':')	;
+	if (pos_dd != std::string::npos)
+	{
+		nick = line.substr(line.find(' ') + 1, pos_dd - 2);
+		reason = line.substr(pos_dd, (line.size() - pos_dd));
+	}
+	else
+	{
+		nick = line.substr(line.find(' ') + 1, line.size() - line.find(' ') + 1);
+		reason = "";
+	}
+
+	if (!exist_channel(chan))
+	{
+		msg = ":"
+	}		
 
 	std::string ban =
 	"⡶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⢶\r\n"
@@ -141,7 +164,7 @@ void Server::ch_kick(std::string line, size_t pos, size_t cl_idx)
 	"⠀⠀⠀⠀⠀⠀⠀⠀⣾⡿⢿⣦⣴⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⠄⠀⠀⠀⠀⠀⠀⠀⠀\r\n";
 }
 
-void Server::ch_invite(std::string line, size_t pos, size_t cl_idx)
+void Server::ch_invite(std::string line, size_t cl_idx)
 {
 	/*TODO:
 	/invite <nickname> #channel
@@ -175,7 +198,7 @@ void Server::ch_topic(std::string line, size_t cl_idx)
 
 }
 
-void Server::ch_mode(std::string line, size_t pos, size_t cl_idx)
+void Server::ch_mode(std::string line, size_t cl_idx)
 {
 	/*TODO:
 	/mode #channel +/-attribute [data]

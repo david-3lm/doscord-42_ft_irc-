@@ -81,10 +81,10 @@ private:
 
 	//Channel commands
 	void ch_join(std::string line, size_t cl_idx);
-	void ch_kick(std::string line, size_t pos, size_t cl_idx);
-	void ch_invite(std::string line, size_t pos, size_t cl_idx);
+	void ch_kick(std::string line, size_t cl_idx);
+	void ch_invite(std::string line, size_t cl_idx);
 	void ch_topic(std::string line, size_t cl_idx);
-	void ch_mode(std::string line, size_t pos, size_t cl_idx);
+	void ch_mode(std::string line, size_t cl_idx);
 	void ch_msg(std::string line, size_t cl_idx);
 
 	// Channel find_channel(std::string name);

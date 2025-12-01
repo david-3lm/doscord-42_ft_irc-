@@ -247,13 +247,13 @@ void Server::parse_buff(std::string buff, size_t cl_idx)
 		else if (com == "JOIN")
 			ch_join(&line[pos + 1], cl_idx);
 		else if (com == "KICK")
-			ch_kick(line, pos, cl_idx);
+			ch_kick(&line[pos + 1], cl_idx);
 		else if (com == "INVITE")
-			ch_invite(line, pos, cl_idx);
+			ch_invite(&line[pos + 1], cl_idx);
 		else if (com == "TOPIC")
 			ch_topic(&line[pos + 1], cl_idx);
 		else if (com == "MODE")
-			ch_mode(line, pos, cl_idx);
+			ch_mode(&line[pos + 1], cl_idx);
 		else if (com == "PRIVMSG")
 			ch_msg(&line[pos + 1], cl_idx); 
 	}
