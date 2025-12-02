@@ -18,6 +18,7 @@ private:
 	std::deque<std::string> _invites;
 	size_t _channel_limit;
 	bool _invite_mode;
+	bool _topic_restrict;
 
 public:
     Channel(const std::string &name, const std::string &pass);
@@ -37,6 +38,7 @@ public:
 	void setTopic(std::string);
 	void setLimit(size_t);
 	void setIniviteMode(bool);
+	void setTopicRestirct(bool);
 
 	void addMember(std::string);
 	void addOperator(std::string);

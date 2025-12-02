@@ -88,6 +88,11 @@ void Channel::setIniviteMode(bool mode)
 	_invite_mode = mode;
 }
 
+void Channel::setTopicRestirct(bool mode)
+{
+	_topic_restrict = mode;
+}
+
 void Channel::addMember(std::string member)
 {
 	_members.push_back(member);

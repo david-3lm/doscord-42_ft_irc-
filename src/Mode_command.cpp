@@ -1,28 +1,43 @@
 #include "Server.hpp"
 
-void mode_invite(size_t cl_idx, bool mode)
+void Server::mode_invite(Channel& c, size_t cl_idx, bool mode)
 {
-
+	c.setIniviteMode(mode);
 }
 
-void mode_topic(size_t cl_idx, bool mode)
+void Server::mode_topic(Channel& c, size_t cl_idx, bool mode)
 {
-
+	c.setTopicRestirct(mode);
 }
 
-void mode_key(size_t cl_idx, bool mode)
+void Server::mode_key(Channel& c, size_t cl_idx, bool mode)
 {
-
+	//TODO RECIBIR EL ARGUMENTO
+	/*
+	if(mode == true)
+		c.setPass(arg);
+	else
+		c.setPass("");
+	*/
 }
 
-void mode_operator(size_t cl_idx, bool mode)
+void Server::mode_operator(Channel& c, size_t cl_idx, bool mode)
 {
-
+	//TODO RECIBIR ARG
+	/*
+	if (mode == true && !c.isOperator(arg))
+		c.addoperator(arg);
+	else if (mode == false && c.isOperator(arg))
+		c.kickOperator(arg);
+	*/
 }
 
-void mode_limit(size_t cl_idx, bool mode)
+void Server::mode_limit(Channel& c, size_t cl_idx, bool mode)
 {
-
+	//TODO: RECIBIR ARG
+	/*
+	c.setLimit(arg);
+	*/
 }
 
 void Server::ch_mode(std::string line, size_t cl_idx)
@@ -78,33 +93,38 @@ void Server::ch_mode(std::string line, size_t cl_idx)
 	}
 
 	Channel &c = find_channel(chan);
+	//TODO: COMPROBAR SI ES OPERATOR
 
+	if (!c.isOperator(_clients[cl_idx].getNick()))
+	{
+		//TODO: ERROOOOOR
+	}
 	if (mode.find("+", 0) != std::string::npos)
 	{
 		if (mode.find("i") != std::string::npos)
-			mode_invite(cl_idx, true);
+			mode_invite(c, cl_idx, true);
 		if (mode.find("t") != std::string::npos)
-			mode_topic(cl_idx, true);
+			mode_topic(c, cl_idx, true);
 		if (mode.find("k") != std::string::npos)
-			mode_key(cl_idx, true);
+			mode_key(c, cl_idx, true);
 		if (mode.find("o") != std::string::npos)
-			mode_operator(cl_idx, true);
+			mode_operator(c, cl_idx, true);
 		if (mode.find("l") != std::string::npos)
-			mode_limit(cl_idx, true);
+			mode_limit(c, cl_idx, true);
 		return;
 	}
 	if (mode.find("-", 0) != std::string::npos)
 	{
 		if (mode.find("i") != std::string::npos)
-			mode_invite(cl_idx, false);
+			mode_invite(c, cl_idx, false);
 		if (mode.find("t") != std::string::npos)
-			mode_topic(cl_idx, false);
+			mode_topic(c, cl_idx, false);
 		if (mode.find("k") != std::string::npos)
-			mode_key(cl_idx, false);
+			mode_key(c, cl_idx, false);
 		if (mode.find("o") != std::string::npos)
-			mode_operator(cl_idx, false);
+			mode_operator(c, cl_idx, false);
 		if (mode.find("l") != std::string::npos)
-			mode_limit(cl_idx, false);
+			mode_limit(c, cl_idx, false);
 		return ;
 	}
 }
