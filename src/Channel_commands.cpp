@@ -91,7 +91,8 @@ void Server::ch_join(std::string line, size_t cl_idx)
 	send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 	if (!c.getTopic().empty())
 	{
-		msg = ":doscord.irc 332 " + chan + " : " + c.getTopic() + "\r\n";
+		msg = ":doscord.irc TOPIC " + chan + " :" + c.getTopic() + "\r\n";
+
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 	}
 }
@@ -228,11 +229,19 @@ void Server::ch_invite(std::string line, size_t cl_idx)
 		return ;
 	}
 
+	c.addInvite(nick_invite);
+
 	msg = ":" + _clients[cl_idx].getNick() + " INVITE " + nick_invite + " " + chan + "\r\n";
 	send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 
-	msg = ":doscord.irc 341 " + chan + " : " + nick_invite + "\r\n";
-	send(_polls[cl_idx + 2].fd, msg.c_str(), msg.size(), 0);
+	for (int i = 0; i < _clients.size(); i++)
+	{
+		if (_clients[i].getNick() == nick_invite)
+			send(_polls[i + 1].fd, msg.c_str(), msg.size(), 0);
+	}
+	
+	// msg = ":doscord.irc INVITE " + chan + " :" + nick_invite + "\r\n";
+	// send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 }
 
 void Server::ch_topic(std::string line, size_t cl_idx)

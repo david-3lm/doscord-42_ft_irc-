@@ -129,8 +129,33 @@ bool Channel::isOperator(std::string member)
 	std::deque<std::string>::iterator it;
 	it = std::find(_operators.begin(), _operators.end(), member);
 	if (it != _operators.end())
-		return (false);
-	return (true);
+		return (true);
+	return (false);
+}
+
+void Channel::addInvite(std::string name)
+{
+	std::deque<std::string>::iterator it;
+	it = std::find(_invites.begin(), _invites.end(), name);
+	if (it != _operators.end())
+		_invites.push_back(name);
+}
+
+void Channel::eraseInvite(std::string name)
+{
+	std::deque<std::string>::iterator it;
+	it = std::find(_invites.begin(), _invites.end(), name);
+	if (it != _operators.end())
+		_invites.erase(it);
+}
+
+bool Channel::isInvited(std::string member)
+{
+	std::deque<std::string>::iterator it;
+	it = std::find(_invites.begin(), _invites.end(), member);
+	if (it != _invites.end())
+		return (true);
+	return (false);
 }
 
 std::ostream &operator<<(std::ostream &os, const Channel &c)

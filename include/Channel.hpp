@@ -15,6 +15,7 @@ private:
 	std::string _channel_topic;
 	std::deque<std::string> _members;
 	std::deque<std::string> _operators;
+	std::deque<std::string> _invites;
 	size_t _channel_limit;
 	bool _invite_mode;
 
@@ -39,12 +40,15 @@ public:
 
 	void addMember(std::string);
 	void addOperator(std::string);
+	void addInvite(std::string);
 
 	void kickMember(std::string);
 	void kickOperator(std::string);
+	void eraseInvite(std::string);
 
 	bool isMember(std::string);
 	bool isOperator(std::string);
+	bool isInvited(std::string);
 
 };
 
