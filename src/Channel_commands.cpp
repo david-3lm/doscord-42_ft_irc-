@@ -260,7 +260,7 @@ void Server::ch_topic(std::string line, size_t cl_idx)
 		topic = line.substr(pos_dd + 1, line.find("\r") - (pos_dd + 1));
 	else
 		topic = "";
-	
+
 	if (!exist_channel(chan))
 	{
 		std::cout << RED << "Channel no exist" << NO_COLOR << std::endl;
@@ -302,20 +302,6 @@ void Server::ch_topic(std::string line, size_t cl_idx)
 	}
 	
 
-}
-
-void Server::ch_mode(std::string line, size_t cl_idx)
-{
-	/*TODO:
-	/mode #channel +/-attribute [data]
-		· i: Set/remove Invite-only channel
-		· t: Set/remove the restrictions of the TOPIC command to channel operators
-		· k: Set/remove the channel key (password)
-		· o: Give/take channel operator privilege
-		· l: Set/remove the user limit to channe
-	*/
-
-	std::cout<< RED << "MODO"<< NO_COLOR <<  std::endl;
 }
 
 void Server::ch_msg(std::string line, size_t cl_idx)

@@ -9,6 +9,7 @@ SRC_FILES = main.cpp \
 	Channel_commands.cpp \
 	Channel.cpp \
 	Client.cpp \
+	Mode_command.cpp\
 	Register_client.cpp \
 	Server.cpp
 
