@@ -289,6 +289,8 @@ size_t Server::find_channel_it(std::string name)
 
 bool Server::exist_channel(std::string name)
 {
+	if (name.empty())
+		return false;
 	for (size_t i = 0; i < _channels.size(); i++)
 	{
 		if (_channels[i].getName() == name)

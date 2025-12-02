@@ -72,13 +72,6 @@ void Client::setRegistered(bool reg)
 
 bool Client::tryToRegister(std::deque<std::string> registered)
 {
-	// std::cout << "DENTRO DE TRY TO REGISTER" << std::endl;
-	// std::cout << "POLLFD: " << this->_poll_client.fd <<std::endl;
-	// std::cout << "BOOL: " << this->getRegistered() <<std::endl;
-	// std::cout << "USER: " << this->getUser() << std::endl;
-	// std::cout << "NICK: " << this->getNick() << std::endl;
-	// std::cout << "PASS: " << this->getPass() << std::endl;
-	// std::cout << "DENTRO DE TRY TO REGISTER" << std::endl;
 	if (this->getRegistered())
 		return (false);
 	if (_user.empty() || _nick.empty() || _pass.empty())
