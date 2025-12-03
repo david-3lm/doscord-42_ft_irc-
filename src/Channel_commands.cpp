@@ -58,14 +58,13 @@ void Server::ch_join(std::string line, size_t cl_idx)
 		std::cout << "——————————————————————————————————" << NO_COLOR << std::endl;
 
 
-	// NO BORRAR ------------------------------------------------------
-	// if (c.getMembers().size() == c.getLimit())
-	// {
-	// 	std::cout << RED << chan << "is full\r\n";
-	// 	msg = "doscrod.irc 471 " + chan + ":Channel [" + chan + "] is full\r\n";
-	// 	send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
-	// 	return ;
-	// }
+	if (c.getMembers().size() >= c.getLimit())
+	{
+		std::cout << RED << chan << "is full\r\n";
+		msg = "doscrod.irc 471 " + chan + ":Channel [" + chan + "] is full\r\n";
+		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
 
 	if (!c.getPass().empty() && pass != c.getPass())
 	{

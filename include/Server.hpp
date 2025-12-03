@@ -17,6 +17,7 @@
 #endif
 
 #include <algorithm>
+#include <cctype>
 #include <ctime>
 #include <exception>
 #include <fcntl.h>
@@ -90,9 +91,9 @@ private:
 	//Channel Modes
 	void mode_invite(Channel& c, size_t cl_idx, bool mode);
 	void mode_topic(Channel& c, size_t cl_idx, bool mode);
-	void mode_key(Channel& c, size_t cl_idx, bool mode);
-	void mode_operator(Channel& c, size_t cl_idx, bool mode);
-	void mode_limit(Channel& c, size_t cl_idx, bool mode);
+	void mode_key(Channel& c, size_t cl_idx, bool mode, std::string arg);
+	void mode_operator(Channel& c, size_t cl_idx, bool mode, std::string arg);
+	void mode_limit(Channel& c, size_t cl_idx, bool mode, std::string arg);
 
 	// Channel find_channel(std::string name);
 	Channel &find_channel(std::string name);
