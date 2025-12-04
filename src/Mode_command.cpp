@@ -16,7 +16,7 @@ void Server::mode_key(Channel& c, size_t cl_idx, bool mode, std::string arg)
 	if (arg.empty())
 	{
 		std::cout << RED << "Empty parameter" << NO_COLOR << std::endl;
-		std::string msg = ":doscord.irc 461 " + c.getName() + ":Empty parameter\r\n";
+		std::string msg = ":doscord.irc 461 " + _clients[cl_idx].getNick() + " " + c.getName() + ": Empty parameter\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
@@ -33,7 +33,7 @@ void Server::mode_operator(Channel& c, size_t cl_idx, bool mode, std::string arg
 	if (arg.empty())
 	{
 		std::cout << RED << "Not parameters" << NO_COLOR << std::endl;
-		std::string msg = ":doscord.irc 461 " + c.getName() + ":Empty parameter\r\n";
+		std::string msg = ":doscord.irc 461 " + _clients[cl_idx].getNick() + " " + c.getName() + ": Empty parameter\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
@@ -41,7 +41,7 @@ void Server::mode_operator(Channel& c, size_t cl_idx, bool mode, std::string arg
 	if (!c.isMember(arg))
 	{
 		std::cout << RED << arg << " They aren't on that channel " << c.getName() << NO_COLOR << std::endl;
-		std::string msg = ":doscord.irc 441 " + c.getName() + " : " + arg + " aren't on that channel\r\n";
+		std::string msg = ":doscord.irc 441 " + _clients[cl_idx].getNick() + " " + c.getName() + " : " + arg + " aren't on that channel\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
@@ -49,7 +49,7 @@ void Server::mode_operator(Channel& c, size_t cl_idx, bool mode, std::string arg
 	if (mode == true && !c.isOperator(arg))
 	{
 		c.addOperator(arg);
-		std::string msg = ":doscord.irc 381 " + c.getName() + " : " + _clients[cl_idx].getNick() + " You are now an IRC operator";
+		std::string msg = ":doscord.irc 381 " + _clients[cl_idx].getNick() + " " + c.getName() + " : " + _clients[cl_idx].getNick() + " You are now an IRC operator";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 	}
 	else if (mode == false && c.isOperator(arg))
@@ -63,7 +63,7 @@ void Server::mode_limit(Channel& c, size_t cl_idx, bool mode, std::string arg)
 	if (arg.empty())
 	{
 		std::cout << RED << "Not parameters" << NO_COLOR << std::endl;
-		std::string msg = ":doscord.irc 461 " + c.getName() + " :Empty parameter\r\n";
+		std::string msg = ":doscord.irc 461 " + _clients[cl_idx].getNick() + " " + c.getName() + " : Empty parameter\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
@@ -72,7 +72,7 @@ void Server::mode_limit(Channel& c, size_t cl_idx, bool mode, std::string arg)
 		if (!isdigit(arg[i]))
 		{
 			std::cout << RED << "Ivalid Parameter. Only numbers" << NO_COLOR << std::endl;
-			std::string msg = ":doscord.irc 696 " + c.getName() + " :Ivalid Parameter. Only numbers\r\n";
+			std::string msg = ":doscord.irc 696 " + _clients[cl_idx].getNick() + " " + c.getName() + " : Ivalid Parameter. Only numbers\r\n";
 			send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 			return ;
 		}
@@ -130,37 +130,44 @@ void Server::ch_mode(std::string line, size_t cl_idx)
 	}
 	
 	std::cout << YELLOW << "MODE: chan = -" << chan << "-\nmode = -" << mode << "-\narg = -" << arg << "-" << NO_COLOR << std::endl;
-	if (mode.empty())
-	{
-		std::cout << RED << "Not parameters" << NO_COLOR << std::endl;
-		msg = ":doscord.irc 461 " + chan + ":Empty parameter\r\n";
-		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
-		return ;
-	}
-
+	
 	if (!exist_channel(chan))
 	{
 		std::cout << RED << "Channel no exist" << NO_COLOR << std::endl;
-		msg = ":doscord.irc 403 " + chan + " :No such channel\r\n";
+		msg = ":doscord.irc 403 " + _clients[cl_idx].getNick() + " " + chan + " : No such channel\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
 	
-	if ((mode.find("+", 0) == std::string::npos && mode.find("-", 0) == std::string::npos) ||
-		mode.find("+", 0) != std::string::npos && mode.find("-", 0) != std::string::npos)
+	Channel &c = find_channel(chan);
+
+	if (mode.empty())
 	{
-		std::cout << RED << "Unknown MODE flag" << NO_COLOR << std::endl;
-		msg = ":doscord.irc 501 " + chan + " :Unknown MODE flag\r\n";
+		if (!c.getIsNew())
+		{
+			c.setIsNew(true);
+			return;
+		}
+		std::cout << RED << "Not parameters" << NO_COLOR << std::endl;
+		msg = ":doscord.irc 461 " + _clients[cl_idx].getNick() + " " + chan + " : Empty parameter\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
-
-	Channel &c = find_channel(chan);
-
+	
+	if (((mode.find("+", 0) == std::string::npos && mode.find("-", 0) == std::string::npos) ||
+	(mode.find("+", 0) != std::string::npos && mode.find("-", 0) != std::string::npos)) && c.getIsNew())
+	{
+		std::cout << RED << "Unknown MODE flag" << NO_COLOR << std::endl;
+		msg = ":doscord.irc 501 " + _clients[cl_idx].getNick() + " " + chan + " : Unknown MODE flag\r\n";
+		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
+	
+	
 	if (!c.isOperator(_clients[cl_idx].getNick()))
 	{
 		std::cout << RED << "Permission Denied -" << _clients[cl_idx].getNick() << " You're not an IRC operator" << NO_COLOR << std::endl;
-		msg = ":doscord.irc 481 " + chan + " : " + _clients[cl_idx].getNick() + " Permission Denied- You're not an IRC operator\r\n";
+		msg = ":doscord.irc 481 " + _clients[cl_idx].getNick() + " " + chan + " : " + _clients[cl_idx].getNick() + " Permission Denied- You're not an IRC operator\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
@@ -180,7 +187,7 @@ void Server::ch_mode(std::string line, size_t cl_idx)
 		else
 		{
 			std::cout << RED << "Unknown MODE flag" << NO_COLOR << std::endl;
-			msg = ":doscord.irc 501 " + chan + " :Unknown MODE flag\r\n";
+			msg = ":doscord.irc 501 " + _clients[cl_idx].getNick() + " " + chan + " : Unknown MODE flag\r\n";
 			send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		}
 		return;
@@ -200,7 +207,7 @@ void Server::ch_mode(std::string line, size_t cl_idx)
 		else
 		{
 			std::cout << RED << "Unknown MODE flag" << NO_COLOR << std::endl;
-			msg = ":doscord.irc 501 " + chan + " :Unknown MODE flag\r\n";
+			msg = ":doscord.irc 501 " + _clients[cl_idx].getNick() + " " + chan + " : Unknown MODE flag\r\n";
 			send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		}
 		return ;
