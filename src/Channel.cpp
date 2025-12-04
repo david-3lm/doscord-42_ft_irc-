@@ -7,7 +7,7 @@ Channel::Channel(const std::string &name, const std::string &pass)
 	_channel_pass = pass;
 	_invite_mode = false;
 	_channel_topic = "";
-	_channel_limit = SIZE_MAX;
+	_channel_limit = INT_MAX;
 }
 
 Channel::~Channel() 

@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <deque>
 #include <iostream>
+#include <limits.h>
 
 class Channel 
 {

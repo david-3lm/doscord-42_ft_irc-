@@ -15,7 +15,7 @@ void Server::mode_key(Channel& c, size_t cl_idx, bool mode, std::string arg)
 	//TODO RECIBIR EL ARGUMENTO
 	if (arg.empty())
 	{
-		std::cout << RED << "Not parameters" << NO_COLOR << std::endl;
+		std::cout << RED << "Empty parameter" << NO_COLOR << std::endl;
 		std::string msg = ":doscord.irc 461 " + c.getName() + ":Empty parameter\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
@@ -84,7 +84,7 @@ void Server::mode_limit(Channel& c, size_t cl_idx, bool mode, std::string arg)
 	if (mode == true)
 		c.setLimit(limit);
 	else
-		c.setLimit(SIZE_MAX);
+		c.setLimit(INT_MAX);
 	
 }
 

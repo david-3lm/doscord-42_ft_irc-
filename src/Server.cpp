@@ -255,7 +255,9 @@ void Server::parse_buff(std::string buff, size_t cl_idx)
 		else if (com == "MODE")
 			ch_mode(&line[pos + 1], cl_idx);
 		else if (com == "PRIVMSG")
-			ch_msg(&line[pos + 1], cl_idx); 
+			ch_msg(&line[pos + 1], cl_idx);
+		else if (com == "PART")
+			ch_part(&line[pos + 1], cl_idx);
 	}
 	
 	

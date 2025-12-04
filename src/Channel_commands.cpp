@@ -306,36 +306,144 @@ void Server::ch_topic(std::string line, size_t cl_idx)
 void Server::ch_msg(std::string line, size_t cl_idx)
 {
 	std::string chan;
-	size_t pos;
+	size_t pos_dd;
 	std::string msg;
-	std::string complete_msg;
+	std::string send_msg;
 
 	std::cout << GREEN << "Entro ch_msg" << NO_COLOR << std::endl;
 	chan = line.substr(0, line.find(" "));
-	pos = line.find(":") + 1;
-	msg = line.substr(pos, line.find("\r"));
-
-	std::cout << YELLOW << "CHAN = -" << chan << "- msg = -" << msg << "-" << NO_COLOR << std::endl;
-	Channel &c = find_channel(chan);
-	std::cout << c << std::endl;
-	//int chIdx;
-
-	/*for (int i = 0; i< _channels.size(); i++)
+	pos_dd = line.find(":") + 1;
+	if (chan.empty())
 	{
-		if(_channels[i].getName() == chan)
-			chIdx = i;
-	}*/
+		std::cout << RED << "Not enough parameters" << NO_COLOR << std::endl;
+		msg = ":doscord.irc 461 " + chan + " :Not enough parameters\r\n";
+		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
+
+	if (pos_dd == line.npos)//in channel
+	{
+		msg = line.substr(pos_dd, line.find("\r") - pos_dd);
+		Channel &c = find_channel(chan);
+
+		for (size_t i = 0; i < _clients.size(); i++)
+		{
+			std::cout << "Envio msg a: -" << _clients[i].getNick() << "-" << std::endl;
+			if (c.isMember(_clients[i].getNick()))
+			{
+				send_msg = ":" + _clients[cl_idx].getNick() + " PRIVMSG "+ chan + " " + msg + "\r\n";
+				std::cout << "Complete = " << send_msg << std::endl;
+				send(_polls[i + 1].fd, send_msg.c_str(), send_msg.size(), 0);
+			}
+		}
+		return ;
+	}
+
+	//---------------------------------------------------------------------
+	//---------------------------------------------------------------------
+
+	if (chan[0] != '#')//to user
+	{
+		size_t id_user = search_id_nick(chan);
+		if (id_user == _clients.size())
+		{
+			std::cout << RED << "No such nick/channel" << NO_COLOR << std::endl;
+			send_msg = ":doscord.irc 401 " + chan + " :No such nick/channel\r\n";
+			send(_polls[cl_idx + 1].fd, send_msg.c_str(), send_msg.size(), 0);
+			return ;
+		}
+		msg = line.substr(line.find(" ") + 1, line.find("\r") - line.find(" ") + 1);
+		if (msg.empty())
+		{
+			std::cout << RED << "Not enough parameters" << NO_COLOR << std::endl;
+			send_msg = ":doscord.irc 461 " + chan + " :Not enough parameters\r\n";
+			send(_polls[cl_idx + 1].fd, send_msg.c_str(), send_msg.size(), 0);
+			return ;
+		}
+		send_msg = ":" +  _clients[cl_idx].getNick() + " PRIVMSG " + _clients[id_user].getNick() + " " + msg + "\r\n";
+		send(_polls[id_user + 1].fd, send_msg.c_str(), send_msg.size(), 0);
+		return ;		
+	}
+
+	if (!exist_channel(chan))
+	{
+		std::cout << RED << "Channel no exist" << NO_COLOR << std::endl;
+		msg = ":doscord.irc 403 " + chan + " :No such channel\r\n";
+		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
+
+	Channel &c = find_channel(chan);
+
+	if (!c.isMember(_clients[cl_idx].getNick()))
+	{
+		std::cout << RED << "You're not on that channel" << NO_COLOR << std::endl;
+		msg = ":doscord.irc 442 " + chan + " :You're not on that channel\r\n";
+		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
+
+	msg = line.substr(line.find(" ") + 1, line.find("\r") - line.find(" ") + 1);
+	if (msg.empty())
+	{
+		std::cout << RED << "Not enough parameters" << NO_COLOR << std::endl;
+		send_msg = ":doscord.irc 461 " + chan + " :Not enough parameters\r\n";
+		send(_polls[cl_idx + 1].fd, send_msg.c_str(), send_msg.size(), 0);
+		return ;
+	}
 
 	for (size_t i = 0; i < _clients.size(); i++)
 	{
 		std::cout << "Envio msg a: -" << _clients[i].getNick() << "-" << std::endl;
 		if (c.isMember(_clients[i].getNick()) && i != cl_idx)
 		{
-			complete_msg = ":" + _clients[cl_idx].getNick() + " " + "PRIVMSG" + " "+ chan + " " + msg + "\r\n";
-			std::cout << "Complete = " << complete_msg << std::endl;
-			send(_polls[i + 1].fd, complete_msg.c_str(), complete_msg.size(), 0);
+			send_msg = ":" + _clients[cl_idx].getNick() + " " + "PRIVMSG" + " "+ chan + " " + msg + "\r\n";
+			std::cout << "Complete = " << send_msg << std::endl;
+			send(_polls[i + 1].fd, send_msg.c_str(), send_msg.size(), 0);
 		}
 
 	}
 	
+}
+
+void Server::ch_part(std::string line, size_t cl_idx)
+{
+	std::string chan;
+	std::string msg;
+	std::string send_msg;
+
+	std::cout << GREEN << "Entro ch_msg" << NO_COLOR << std::endl;
+	chan = line.substr(0, line.find(" "));
+	if (chan.empty())
+	{
+		std::cout << RED << "Not enough parameters" << NO_COLOR << std::endl;
+		msg = ":doscord.irc 461 " + chan + " :Not enough parameters\r\n";
+		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
+
+	Channel &c = find_channel(chan);
+
+	if (!c.isMember(_clients[cl_idx].getNick()))
+	{
+		std::cout << RED << "You're not on that channel" << NO_COLOR << std::endl;
+		msg = ":doscord.irc 442 " + chan + " :You're not on that channel\r\n";
+		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
+
+	c.kickMember(_clients[cl_idx].getNick());
+	msg = _clients[cl_idx].getNick() + " left the chat.";
+	for (size_t i = 0; i < _clients.size(); i++)
+	{
+		if (c.isMember(_clients[i].getNick()) && i != cl_idx)
+		{
+			std::cout << "Envio msg a: -" << _clients[i].getNick() << "-" << std::endl;
+			send_msg = ":doscord.irc PRIVMSG "+ chan + " " + msg + "\r\n";
+			std::cout << "Complete = " << send_msg << std::endl;
+			send(_polls[i + 1].fd, send_msg.c_str(), send_msg.size(), 0);
+		}
+
+	}
+
 }

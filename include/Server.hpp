@@ -23,6 +23,7 @@
 #include <fcntl.h>
 #include <fstream>
 #include <iostream>
+#include <limits.h>
 #include <netinet/in.h>
 #include <poll.h>
 #include <sstream>
@@ -87,6 +88,7 @@ private:
 	void ch_topic(std::string line, size_t cl_idx);
 	void ch_mode(std::string line, size_t cl_idx);
 	void ch_msg(std::string line, size_t cl_idx);
+	void ch_part(std::string line, size_t cl_idx);
 
 	//Channel Modes
 	void mode_invite(Channel& c, size_t cl_idx, bool mode);
