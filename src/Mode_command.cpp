@@ -13,7 +13,7 @@ void Server::mode_topic(Channel& c, size_t cl_idx, bool mode)
 void Server::mode_key(Channel& c, size_t cl_idx, bool mode, std::string arg)
 {
 	//TODO RECIBIR EL ARGUMENTO
-	if (arg.empty())
+	if (arg.empty() && mode == true)
 	{
 		std::cout << RED << "Empty parameter" << NO_COLOR << std::endl;
 		std::string msg = ":doscord.irc 461 " + _clients[cl_idx].getNick() + " " + c.getName() + ": Empty parameter\r\n";
@@ -21,7 +21,7 @@ void Server::mode_key(Channel& c, size_t cl_idx, bool mode, std::string arg)
 		return ;
 	}
 
-	if(mode == true)
+	if (mode == true)
 		c.setPass(arg);
 	else
 		c.setPass("");
@@ -131,6 +131,14 @@ void Server::ch_mode(std::string line, size_t cl_idx)
 	
 	std::cout << YELLOW << "MODE: chan = -" << chan << "-\nmode = -" << mode << "-\narg = -" << arg << "-" << NO_COLOR << std::endl;
 	
+	if (mode.empty())
+	{
+		// std::cout << RED << "Not parameters" << NO_COLOR << std::endl;
+		// msg = ":doscord.irc 461 " + _clients[cl_idx].getNick() + " " + chan + " : Empty parameter\r\n";
+		// send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
+
 	if (!exist_channel(chan))
 	{
 		std::cout << RED << "Channel no exist" << NO_COLOR << std::endl;
@@ -139,29 +147,16 @@ void Server::ch_mode(std::string line, size_t cl_idx)
 		return ;
 	}
 	
-	Channel &c = find_channel(chan);
-
-	if (mode.empty())
-	{
-		if (!c.getIsNew())
-		{
-			c.setIsNew(true);
-			return;
-		}
-		std::cout << RED << "Not parameters" << NO_COLOR << std::endl;
-		msg = ":doscord.irc 461 " + _clients[cl_idx].getNick() + " " + chan + " : Empty parameter\r\n";
-		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
-		return ;
-	}
-	
 	if (((mode.find("+", 0) == std::string::npos && mode.find("-", 0) == std::string::npos) ||
-	(mode.find("+", 0) != std::string::npos && mode.find("-", 0) != std::string::npos)) && c.getIsNew())
+	(mode.find("+", 0) != std::string::npos && mode.find("-", 0) != std::string::npos)))
 	{
 		std::cout << RED << "Unknown MODE flag" << NO_COLOR << std::endl;
 		msg = ":doscord.irc 501 " + _clients[cl_idx].getNick() + " " + chan + " : Unknown MODE flag\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
+	
+	Channel &c = find_channel(chan);
 	
 	
 	if (!c.isOperator(_clients[cl_idx].getNick()))

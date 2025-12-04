@@ -8,7 +8,6 @@ Channel::Channel(const std::string &name, const std::string &pass)
 	_invite_mode = false;
 	_channel_topic = "";
 	_channel_limit = INT_MAX;
-	_is_new = false;
 }
 
 Channel::~Channel() 
@@ -65,11 +64,6 @@ bool Channel::getIniviteMode() const
 	return _invite_mode;
 }
 
-bool Channel::getIsNew() const
-{
-	return _is_new;
-}
-
 void Channel::setName(std::string name)
 {
 	_channel_name = name;
@@ -98,11 +92,6 @@ void Channel::setIniviteMode(bool mode)
 void Channel::setTopicRestirct(bool mode)
 {
 	_topic_restrict = mode;
-}
-
-void Channel::setIsNew(bool mode)
-{
-	_is_new = mode;
 }
 
 void Channel::addMember(std::string member)
