@@ -17,14 +17,15 @@
 #endif
 
 #include <algorithm>
+#include <arpa/inet.h>
 #include <cctype>
 #include <ctime>
 #include <exception>
 #include <fcntl.h>
 #include <fstream>
 #include <iostream>
-#include <limits.h>
 #include <netinet/in.h>
+#include <limits.h>
 #include <poll.h>
 #include <sstream>
 #include <stdexcept>

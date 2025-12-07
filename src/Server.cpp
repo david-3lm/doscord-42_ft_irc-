@@ -45,6 +45,10 @@ void Server::init()
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(_port);
 	addr.sin_addr.s_addr = INADDR_ANY;
+
+	char ip_str[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET, &(addr.sin_addr), ip_str, INET_ADDRSTRLEN);
+	std::cout << GREEN << "Prueba a ver si puede mostrar ip => " << ip_str << NO_COLOR << std::endl;
 	std::cout << GREEN << "Port => " << ntohs(addr.sin_port) << NO_COLOR << std::endl;
 	
 	if (bind(tcp_socket, (sockaddr *)&addr, sizeof(addr)) == -1)
