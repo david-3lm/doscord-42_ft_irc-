@@ -24,6 +24,9 @@ private:
 	std::string _nick;
 	std::string _user;
 	bool _registered;
+	bool _invited;
+	std::string _chan_invited;
+
 public:
     Client(pollfd poll, sockaddr addr);
     ~Client();
@@ -39,9 +42,11 @@ public:
 	void setNick(std::string nick);
 	void setUser(std::string user);
 	void setRegistered(bool reg);
+	void setInvited(bool inv, std::string chan);
 
 	bool tryToRegister(std::deque<std::string> registered);
 	void sendToClient(std::string &msg);
+	bool getInvited(std::string chan);
 
 
 	void quitClient();

@@ -10,6 +10,7 @@ void Server::ch_join(std::string line, size_t cl_idx)
 	std::string msg;
 	size_t pos_sp;
 	pos_sp = line.find(" ");
+
 	if (pos_sp == line.npos)
 	{
 		chan = line.substr(0, line.find("\r"));
@@ -24,20 +25,20 @@ void Server::ch_join(std::string line, size_t cl_idx)
 	if (chan.empty())
 	{
 		std::cout << RED << "Not parameters" << NO_COLOR << std::endl;
-		msg = ":doscord.irc 461 " + _clients[cl_idx].getNick() + " " + chan + ": Empty parameter\r\n";
+		msg = ":doscord.irc 461 " + _clients[cl_idx].getNick() + " " + chan + ":Empty parameter\r\n";
 		return ;
 	}
 	if (chan[0] != '#')
 	{
 		std::cout << RED << "Bad Channel mask (#)" << NO_COLOR << std::endl;
-		msg = ":doscord.irc 476 " + _clients[cl_idx].getNick() + " " + chan + " : Bad Channel Mask\r\n";
+		msg = ":doscord.irc 476 " + _clients[cl_idx].getNick() + " " + chan + " :Bad Channel Mask\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
 	if (!_clients[cl_idx].getRegistered())
 	{
 		std::cout << RED << "Not registered" << NO_COLOR << std::endl;
-		msg = ":doscord.irc 451 " + _clients[cl_idx].getNick() + " " + chan + " : Client not registered\r\n" ;
+		msg = ":doscord.irc 451 " + _clients[cl_idx].getNick() + " " + chan + " :Client not registered\r\n" ;
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
@@ -61,7 +62,7 @@ void Server::ch_join(std::string line, size_t cl_idx)
 	if (c.getMembers().size() >= c.getLimit())
 	{
 		std::cout << RED << chan << "is full\r\n";
-		msg = "doscrod.irc 471 " + _clients[cl_idx].getNick() + " " + chan + ": Channel [" + chan + "] is full\r\n";
+		msg = ":doscrod.irc 471 " + _clients[cl_idx].getNick() + " " + chan + " :Channel [" + chan + "] is full\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
@@ -69,28 +70,40 @@ void Server::ch_join(std::string line, size_t cl_idx)
 	if (!c.getPass().empty() && pass != c.getPass())
 	{
 		std::cout << RED << "Wrong Password for " << chan << NO_COLOR << std::endl;
-		msg = ":doscord.irc 475 " + _clients[cl_idx].getNick() + " " + chan + " : Wrong_Password\r\n";
+		msg = ":doscord.irc 475 " + _clients[cl_idx].getNick() + " " + chan + " :Wrong_Password\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
-	if (c.getIniviteMode())
+	if (c.getIniviteMode() && !_clients[cl_idx].getInvited(chan))
 	{
 		std::cout << RED << chan << " in only invitation mode" << NO_COLOR << std::endl;
-		msg = ":doscord.irc 473 " + _clients[cl_idx].getNick() + " " + chan + " : In Only invitation mode\r\n";
+		msg = ":doscord.irc 473 " + _clients[cl_idx].getNick() + " " + chan + " :In Only invitation mode\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
 	if (!c.isMember(_clients[cl_idx].getNick()))
 	{
 		c.addMember(_clients[cl_idx].getNick());
-		c.addOperator(_clients[cl_idx].getNick());
+		if (c.getMembers().size() == 1)
+			c.addOperator(_clients[cl_idx].getNick());
 	}
 
 	msg = ":" + _clients[cl_idx].getNick() + " JOIN " + c.getName() + "\r\n";
 	send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+	for (size_t i = 0; i < _clients.size(); i++)
+	{
+		if (c.isMember(_clients[i].getNick()) && i != cl_idx)
+		{
+			msg = ":doscord.irc PRIVMSG "+ chan + " " + _clients[cl_idx].getNick() + " joined the chat.\r\n";
+			std::cout << "Complete = " << msg << std::endl;
+			send(_polls[i + 1].fd, msg.c_str(), msg.size(), 0);
+		}
+	}
+	
 	if (!c.getTopic().empty())
 	{
-		msg = ":doscrod.irc 332 " + _clients[cl_idx].getNick() + " " + _clients[cl_idx].getNick() + " " + chan + " : " + c.getTopic() + "\r\n";
+		msg = ":doscrod.irc 332 " + _clients[cl_idx].getNick() + " " + chan + " :" + c.getTopic() + "\r\n";
+		// msg = ":doscrod.irc TOPIC " + chan + " : " + c.getTopic() + "\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 	}
 }
@@ -103,7 +116,7 @@ void Server::ch_kick(std::string line, size_t cl_idx)
 	que existe el canal	
 	*/
 
-	std::string msg;
+	std::string msg = "";
 	std::string chan;
 	std::string nick;
 	std::string reason;
@@ -113,7 +126,7 @@ void Server::ch_kick(std::string line, size_t cl_idx)
 	pos_dd = line.find(':')	;
 	if (pos_dd != std::string::npos)
 	{
-		nick = line.substr(line.find(' ') + 1, pos_dd - (line.find(" ") + 1));
+		nick = line.substr(line.find(' ') + 1, (pos_dd - 1) - (line.find(" ") + 1));
 		reason = line.substr(pos_dd + 1, line.find("\r") - (pos_dd + 1));
 	}
 	else
@@ -125,14 +138,14 @@ void Server::ch_kick(std::string line, size_t cl_idx)
 	if (!exist_channel(chan))
 	{
 		std::cout << RED << "Channel no exist" << NO_COLOR << std::endl;
-		msg = ":doscord.irc 403 " + _clients[cl_idx].getNick() + " " + chan + " : No such channel\r\n";
+		msg = ":doscord.irc 403 " + _clients[cl_idx].getNick() + " " + chan + " :No such channel\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
 	if (nick.empty())
 	{
 		std::cout << RED << "Not enough parameters" << NO_COLOR << std::endl;
-		msg = ":doscord.irc 461 " + _clients[cl_idx].getNick() + " " + chan + " : Not enough parameters\r\n";
+		msg = ":doscord.irc 461 " + _clients[cl_idx].getNick() + " " + chan + " :Not enough parameters\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
@@ -145,10 +158,17 @@ void Server::ch_kick(std::string line, size_t cl_idx)
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
+	if (!c.isOperator(_clients[cl_idx].getNick()))
+	{
+		std::cout << RED << "Permission Denied -" << _clients[cl_idx].getNick() << "You're not an IRC operator" << NO_COLOR << std::endl;
+		msg = ":doscord.irc 481 " + _clients[cl_idx].getNick() + " " + chan + " : " + _clients[cl_idx].getNick() + " Permission Denied- You're not an IRC operator\r\n";
+		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
 	if (!c.isMember(nick))
 	{
 		std::cout << RED << nick << " They aren't on that channel " << chan << NO_COLOR << std::endl;
-		msg = ":doscord.irc 441 " + _clients[cl_idx].getNick() + " " + chan + " : They aren't on that channel\r\n";
+		msg = ":doscord.irc 441 " + _clients[cl_idx].getNick() + " " + chan + " :They aren't on that channel\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
@@ -180,10 +200,11 @@ void Server::ch_kick(std::string line, size_t cl_idx)
 	"⠀⠀⠀⠀⠀⠀⠀⠀⣾⡿⢿⣦⣴⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⠄⠀⠀⠀⠀⠀⠀⠀⠀\n";
 
 	size_t idx_kick = search_id_nick(nick);
-	
-	msg = ":doscord.irc 0 " + c.getName() + " :" + ban + "\t\tFrom channel: " + chan + "\r\n";
+	// msg = ":" + nick + " PART " + c.getName() + " :Ban!\r\n";
+	// send(_polls[idx_kick + 1].fd, msg.c_str(), msg.size(), 0);
+	msg = ":" + _clients[cl_idx].getNick() + " KICK " + chan + " " + nick + " : " + reason + "\r\n";
 	send(_polls[idx_kick + 1].fd, msg.c_str(), msg.size(), 0);
-	msg = ":doscord.irc KICK " + _clients[cl_idx].getNick() + " " + c.getName() + " " + nick + " " + reason + "\r\n";
+	msg = ":doscord.irc 0 " + c.getName() + " :" + ban + "\t\tFrom channel: " + chan + "\r\n";
 	send(_polls[idx_kick + 1].fd, msg.c_str(), msg.size(), 0);
 	c.kickMember(nick);
 }
@@ -205,7 +226,7 @@ void Server::ch_invite(std::string line, size_t cl_idx)
 	if (chan.empty() && !exist_channel(chan))
 	{
 		std::cout << RED << "Channel no exist" << NO_COLOR << std::endl;
-		msg = ":doscord.irc 403 " + _clients[cl_idx].getNick() + " " + chan + " : No such channel\r\n";
+		msg = ":doscord.irc 403 " + _clients[cl_idx].getNick() + " " + chan + " :No such channel\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
@@ -215,7 +236,14 @@ void Server::ch_invite(std::string line, size_t cl_idx)
 	if (!c.isMember(_clients[cl_idx].getNick()))
 	{
 		std::cout << RED << "You're not on that channel" << NO_COLOR << std::endl;
-		msg = ":doscord.irc 442 " + _clients[cl_idx].getNick() + " " + chan + " : You're not on that channel\r\n";
+		msg = ":doscord.irc 442 " + _clients[cl_idx].getNick() + " " + chan + " :You're not on that channel\r\n";
+		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
+	if (!c.isOperator(_clients[cl_idx].getNick()))
+	{
+		std::cout << RED << "Permission Denied -" << _clients[cl_idx].getNick() << " You're not an IRC operator" << NO_COLOR << std::endl;
+		msg = ":doscord.irc 481 " + _clients[cl_idx].getNick() + " " + chan + " : " + _clients[cl_idx].getNick() + " Permission Denied- You're not an IRC operator\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
@@ -235,11 +263,12 @@ void Server::ch_invite(std::string line, size_t cl_idx)
 	for (int i = 0; i < _clients.size(); i++)
 	{
 		if (_clients[i].getNick() == nick_invite)
+		{
 			send(_polls[i + 1].fd, msg.c_str(), msg.size(), 0);
+			_clients[i].setInvited(true, chan);
+			return ;
+		}
 	}
-	
-	// msg = ":doscord.irc INVITE " + chan + " :" + nick_invite + "\r\n";
-	// send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 }
 
 void Server::ch_topic(std::string line, size_t cl_idx)
@@ -281,7 +310,13 @@ void Server::ch_topic(std::string line, size_t cl_idx)
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}	
-
+	if (!c.isOperator(_clients[cl_idx].getNick()))
+	{
+		std::cout << RED << "Permission Denied -" << _clients[cl_idx].getNick() << " You're not an IRC operator" << NO_COLOR << std::endl;
+		msg = ":doscord.irc 481 " + _clients[cl_idx].getNick() + " " + chan + " : " + _clients[cl_idx].getNick() + " Permission Denied- You're not an IRC operator\r\n";
+		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
 	if (topic.empty())
 	{
 		if (c.getTopic().empty())
@@ -314,7 +349,6 @@ void Server::ch_msg(std::string line, size_t cl_idx)
 	std::string msg;
 	std::string send_msg;
 
-	std::cout << GREEN << "Entro ch_msg" << NO_COLOR << std::endl;
 	chan = line.substr(0, line.find(" "));
 	pos_dd = line.find(":") + 1;
 	if (chan.empty())

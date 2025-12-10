@@ -5,7 +5,7 @@ Client::Client(pollfd poll, sockaddr addr) : _poll_client(poll), _addr(addr)
 	
 	std::cout << "Cliente creado con fd: " << _poll_client.fd << std::endl;
 	_registered = false;
-	
+	_invited = false;
 }
 
 Client::~Client() 
@@ -70,6 +70,12 @@ void Client::setRegistered(bool reg)
 	this->_registered = reg;
 }
 
+void Client::setInvited(bool inv, std::string chan)
+{
+	_invited = inv;
+	_chan_invited = chan;
+}
+
 bool Client::tryToRegister(std::deque<std::string> registered)
 {
 	if (this->getRegistered())
@@ -95,6 +101,14 @@ void Client::sendToClient(std::string &msg)
 {
 	send(this->_poll_client.fd, msg.c_str(), msg.length(), 0);
 
+}
+
+bool Client::getInvited(std::string chan)
+{
+	if (chan == _chan_invited && _invited == true)
+		return true;
+	else
+		return false;
 }
 
 std::ostream &operator<<(std::ostream &os, const Client &c)

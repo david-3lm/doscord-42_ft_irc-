@@ -2,12 +2,61 @@
 
 void Server::mode_invite(Channel& c, size_t cl_idx, bool mode)
 {
+	std::string msg;
+
 	c.setIniviteMode(mode);
+	if (mode == true)
+	{
+		for (size_t i = 0; i < _clients.size(); i++)
+		{
+			if (c.isMember(_clients[i].getNick()))
+			{
+				msg = ":doscord.irc PRIVMSG "+ c.getName() + " " + c.getName() + " is in invited mode.\r\n";
+				send(_polls[i + 1].fd, msg.c_str(), msg.size(), 0);
+			}
+		}
+	}
+	else
+	{
+		for (size_t i = 0; i < _clients.size(); i++)
+		{
+			if (c.isMember(_clients[i].getNick()))
+			{
+				msg = ":doscord.irc PRIVMSG "+ c.getName() + " " + c.getName() + " isn't in invited mode.\r\n";
+				send(_polls[i + 1].fd, msg.c_str(), msg.size(), 0);
+			}
+		}
+	}
 }
 
 void Server::mode_topic(Channel& c, size_t cl_idx, bool mode)
 {
+	std::string msg;
+
 	c.setTopicRestirct(mode);
+
+	if (mode == true)
+	{
+		for (size_t i = 0; i < _clients.size(); i++)
+		{
+			if (c.isMember(_clients[i].getNick()))
+			{
+				msg = ":doscord.irc PRIVMSG "+ c.getName() + " " + c.getName() + " topic restricted.\r\n";
+				send(_polls[i + 1].fd, msg.c_str(), msg.size(), 0);
+			}
+		}
+	}
+	else
+	{
+		for (size_t i = 0; i < _clients.size(); i++)
+		{
+			if (c.isMember(_clients[i].getNick()))
+			{
+				msg = ":doscord.irc PRIVMSG "+ c.getName() + " " + c.getName() + " topic for all.\r\n";
+				send(_polls[i + 1].fd, msg.c_str(), msg.size(), 0);
+			}
+		}
+	}
 }
 
 void Server::mode_key(Channel& c, size_t cl_idx, bool mode, std::string arg)
@@ -46,11 +95,12 @@ void Server::mode_operator(Channel& c, size_t cl_idx, bool mode, std::string arg
 		return ;
 	}
 
+	size_t id_arg = search_id_nick(arg);
 	if (mode == true && !c.isOperator(arg))
 	{
 		c.addOperator(arg);
-		std::string msg = ":doscord.irc 381 " + _clients[cl_idx].getNick() + " " + c.getName() + " : " + _clients[cl_idx].getNick() + " You are now an IRC operator";
-		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+		std::string msg = ":doscord.irc 381 " + arg + " " + c.getName() + " : " + arg + " You are now an IRC operator";
+		send(_polls[id_arg + 1].fd, msg.c_str(), msg.size(), 0);
 	}
 	else if (mode == false && c.isOperator(arg))
 		c.kickOperator(arg);
@@ -60,7 +110,7 @@ void Server::mode_operator(Channel& c, size_t cl_idx, bool mode, std::string arg
 void Server::mode_limit(Channel& c, size_t cl_idx, bool mode, std::string arg)
 {
 	//TODO: RECIBIR ARG
-	if (arg.empty())
+	if (arg.empty() && mode == true)
 	{
 		std::cout << RED << "Not parameters" << NO_COLOR << std::endl;
 		std::string msg = ":doscord.irc 461 " + _clients[cl_idx].getNick() + " " + c.getName() + " : Empty parameter\r\n";
