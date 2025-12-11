@@ -62,6 +62,8 @@ void Server::mode_topic(Channel& c, size_t cl_idx, bool mode)
 void Server::mode_key(Channel& c, size_t cl_idx, bool mode, std::string arg)
 {
 	//TODO RECIBIR EL ARGUMENTO
+	std::string msg;
+
 	if (arg.empty() && mode == true)
 	{
 		std::cout << RED << "Empty parameter" << NO_COLOR << std::endl;
@@ -71,18 +73,40 @@ void Server::mode_key(Channel& c, size_t cl_idx, bool mode, std::string arg)
 	}
 
 	if (mode == true)
+	{
 		c.setPass(arg);
+		for (size_t i = 0; i < _clients.size(); i++)
+		{
+			if (c.isMember(_clients[i].getNick()))
+			{
+				msg = ":doscord.irc PRIVMSG "+ c.getName() + " " + c.getName() + " password changed.\r\n";
+				send(_polls[i + 1].fd, msg.c_str(), msg.size(), 0);
+			}
+		}
+	}
 	else
+	{
 		c.setPass("");
+		for (size_t i = 0; i < _clients.size(); i++)
+		{
+			if (c.isMember(_clients[i].getNick()))
+			{
+				msg = ":doscord.irc PRIVMSG "+ c.getName() + " " + c.getName() + " password eliminated.\r\n";
+				send(_polls[i + 1].fd, msg.c_str(), msg.size(), 0);
+			}
+		}
+	}
 }
 
 void Server::mode_operator(Channel& c, size_t cl_idx, bool mode, std::string arg)
 {
 	//TODO RECIBIR ARG
+	std::string msg;
+
 	if (arg.empty())
 	{
 		std::cout << RED << "Not parameters" << NO_COLOR << std::endl;
-		std::string msg = ":doscord.irc 461 " + _clients[cl_idx].getNick() + " " + c.getName() + ": Empty parameter\r\n";
+		msg = ":doscord.irc 461 " + _clients[cl_idx].getNick() + " " + c.getName() + ": Empty parameter\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
@@ -90,7 +114,7 @@ void Server::mode_operator(Channel& c, size_t cl_idx, bool mode, std::string arg
 	if (!c.isMember(arg))
 	{
 		std::cout << RED << arg << " They aren't on that channel " << c.getName() << NO_COLOR << std::endl;
-		std::string msg = ":doscord.irc 441 " + _clients[cl_idx].getNick() + " " + c.getName() + " : " + arg + " aren't on that channel\r\n";
+		msg = ":doscord.irc 441 " + _clients[cl_idx].getNick() + " " + c.getName() + " : " + arg + " aren't on that channel\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
@@ -99,21 +123,30 @@ void Server::mode_operator(Channel& c, size_t cl_idx, bool mode, std::string arg
 	if (mode == true && !c.isOperator(arg))
 	{
 		c.addOperator(arg);
-		std::string msg = ":doscord.irc 381 " + arg + " " + c.getName() + " : " + arg + " You are now an IRC operator";
+		msg = ":doscord.irc 381 " + arg + " " + c.getName() + " : " + arg + " You are now an IRC operator";
 		send(_polls[id_arg + 1].fd, msg.c_str(), msg.size(), 0);
+		return ;
 	}
 	else if (mode == false && c.isOperator(arg))
+	{
 		c.kickOperator(arg);
+		std::cout << RED << "Permission Denied -" << _clients[cl_idx].getNick() << " You're not an IRC operator" << NO_COLOR << std::endl;
+		msg = ":doscord.irc 481 " + arg + " " + c.getName() + " : " + arg + " You're not yet an IRC operator\r\n";
+		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
 
 }
 
 void Server::mode_limit(Channel& c, size_t cl_idx, bool mode, std::string arg)
 {
 	//TODO: RECIBIR ARG
+	std::string msg;
+
 	if (arg.empty() && mode == true)
 	{
 		std::cout << RED << "Not parameters" << NO_COLOR << std::endl;
-		std::string msg = ":doscord.irc 461 " + _clients[cl_idx].getNick() + " " + c.getName() + " : Empty parameter\r\n";
+		msg = ":doscord.irc 461 " + _clients[cl_idx].getNick() + " " + c.getName() + " : Empty parameter\r\n";
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
@@ -122,7 +155,7 @@ void Server::mode_limit(Channel& c, size_t cl_idx, bool mode, std::string arg)
 		if (!isdigit(arg[i]))
 		{
 			std::cout << RED << "Ivalid Parameter. Only numbers" << NO_COLOR << std::endl;
-			std::string msg = ":doscord.irc 696 " + _clients[cl_idx].getNick() + " " + c.getName() + " : Ivalid Parameter. Only numbers\r\n";
+			msg = ":doscord.irc 696 " + _clients[cl_idx].getNick() + " " + c.getName() + " : Ivalid Parameter. Only numbers\r\n";
 			send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 			return ;
 		}
@@ -132,9 +165,29 @@ void Server::mode_limit(Channel& c, size_t cl_idx, bool mode, std::string arg)
 	size_t limit;
 	t >> limit;
 	if (mode == true)
+	{
 		c.setLimit(limit);
+		for (size_t i = 0; i < _clients.size(); i++)
+		{
+			if (c.isMember(_clients[i].getNick()))
+			{
+				msg = ":doscord.irc PRIVMSG "+ c.getName() + " " + c.getName() + " user channel limit set on " + arg + ".\r\n";
+				send(_polls[i + 1].fd, msg.c_str(), msg.size(), 0);
+			}
+		}
+	}
 	else
+	{
 		c.setLimit(INT_MAX);
+		for (size_t i = 0; i < _clients.size(); i++)
+		{
+			if (c.isMember(_clients[i].getNick()))
+			{
+				msg = ":doscord.irc PRIVMSG "+ c.getName() + " " + c.getName() + " user channel limit eliminated.\r\n";
+				send(_polls[i + 1].fd, msg.c_str(), msg.size(), 0);
+			}
+		}
+	}
 	
 }
 
@@ -207,8 +260,7 @@ void Server::ch_mode(std::string line, size_t cl_idx)
 	}
 	
 	Channel &c = find_channel(chan);
-	
-	
+
 	if (!c.isOperator(_clients[cl_idx].getNick()))
 	{
 		std::cout << RED << "Permission Denied -" << _clients[cl_idx].getNick() << " You're not an IRC operator" << NO_COLOR << std::endl;
@@ -217,7 +269,7 @@ void Server::ch_mode(std::string line, size_t cl_idx)
 		return ;
 	}
 
-	if (mode.find("+", 0) != std::string::npos)
+	if (mode.find("+", 0) != std::string::npos && mode.size() <= 2)
 	{
 		if (mode.find("i") != std::string::npos)
 			mode_invite(c, cl_idx, true);
@@ -237,7 +289,7 @@ void Server::ch_mode(std::string line, size_t cl_idx)
 		}
 		return;
 	}
-	if (mode.find("-", 0) != std::string::npos)
+	if (mode.find("-", 0) != std::string::npos && mode.size() <= 2)
 	{
 		if (mode.find("i") != std::string::npos)
 			mode_invite(c, cl_idx, false);
@@ -257,4 +309,7 @@ void Server::ch_mode(std::string line, size_t cl_idx)
 		}
 		return ;
 	}
+	std::cout << RED << "Unknown MODE flag" << NO_COLOR << std::endl;
+	msg = ":doscord.irc 501 " + _clients[cl_idx].getNick() + " " + chan + " : Unknown MODE flag\r\n";
+	send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 }
