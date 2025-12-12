@@ -2,9 +2,6 @@
 
 void Server::ch_join(std::string line, size_t cl_idx)
 {
-	/*TODO: CREAR SERVER revisando que empiece por #
-		/join #channel
-	*/
 	std::string chan;
 	std::string pass;
 	std::string msg;
@@ -110,12 +107,6 @@ void Server::ch_join(std::string line, size_t cl_idx)
 
 void Server::ch_kick(std::string line, size_t cl_idx)
 {
-	/*TODO:
-	echar a una persona de un canal
-	comprobar que estas en el canal
-	que existe el canal	
-	*/
-
 	std::string msg = "";
 	std::string chan;
 	std::string nick;
@@ -211,9 +202,6 @@ void Server::ch_kick(std::string line, size_t cl_idx)
 
 void Server::ch_invite(std::string line, size_t cl_idx)
 {
-	/*TODO:
-	/invite <nickname> #channel
-	*/
 	std::string nick_invite;
 	std::string chan;
 	std::string msg;

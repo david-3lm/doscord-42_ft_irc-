@@ -26,7 +26,7 @@ void Botini::onDisconnect()
 
 void Botini::sendMsg(std::string msg)
 {
-	std::cout<< BLUE << "Envio => [" << msg <<"]" << NO_COLOR << std::endl;
+	//std::cout<< BLUE << "Envio => [" << msg <<"]" << NO_COLOR << std::endl;
 	send(_socket_fd, msg.c_str(), msg.size(), 0);
 }
 
@@ -74,10 +74,10 @@ void Botini::botConnect()
 	sendMsg(CMD_NICK(_nick));
 	sendMsg(CMD_USER(_nick, _realname));
 	usleep(3000);
-	sendMsg(CMD_JOIN("#channelBot"));
+	sendMsg(CMD_JOIN("#bot"));
 }
 
-void Botini::sendAnswer(std::string msg)
+void Botini::sendAnswer(std::string msg, std::string chan)
 {
 				std::string ascii =
 "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣀⣠⣤⣤⣄⣀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n"
@@ -106,7 +106,7 @@ void Botini::sendAnswer(std::string msg)
 
 	while(std::getline(ss, m))
 	{
-		sendMsg(CMD_PRIVMSG("#channelBot", m) + "\r\n");
+		sendMsg(CMD_PRIVMSG(chan, m) + "\r\n");
 	}
 }
 
@@ -128,16 +128,15 @@ void Botini::update()
 		{
 			close(_socket_fd);
 			onDisconnect();
-			//throw std::runtime_error(strerror(errno));
 		}
 
-		buff[readed_count] = '\0';
+		buff[readed_count + 1] = '\0';
 		std::cout << buff << std::flush;
 
-		if (std::string(buff).find("PRIVMSG #channelBot !ping") != std::string::npos)
+		if (std::string(buff).find("PRIVMSG #bot !ping") != std::string::npos)
 		{
 			try {
-				sendAnswer("Pong!");
+				sendAnswer("Pong!", "#bot");
 				
 			} catch (std::exception &e) {
 				close(_socket_fd);
@@ -146,7 +145,7 @@ void Botini::update()
 			}
 		}
 
-		else if (std::string(buff).find("#channelBot") != std::string::npos)
+		else if (std::string(buff).find("#bot") != std::string::npos)
 		{
 			try {
 				std::deque<std::string> _replies;
@@ -157,7 +156,7 @@ void Botini::update()
 				_replies.push_back("✨ beep boop ✨");
 				_replies.push_back("¿Sí?");
 				int r = rand() % _replies.size();
-				sendAnswer(_replies[r]);
+				sendAnswer(_replies[r], "#bot");
 				
 			} catch (std::exception &e) {
 				close(_socket_fd);
@@ -165,6 +164,35 @@ void Botini::update()
 				std::cerr << "Error: " << e.what() << std::endl;
 			}
 		}
-	}
-	
+		else if (std::string(buff).find("INVITE") != std::string::npos)
+		{
+			size_t it = std::string(buff).find("#");
+			size_t it2 = std::string(buff).find("\r");
+			std::string chan = std::string(buff).substr(it, it2 - it);
+			sendMsg(CMD_JOIN(chan));
+			usleep(3000);
+			sendAnswer("¿Me llamabas?", chan);
+			std::cout << "[" << chan << "]" << std::endl;
+		}
+		else if (std::string(buff).find(":.") != std::string::npos)
+		{
+			size_t it = std::string(buff).find("#");
+			size_t it2 = std::string(buff).find(" :");
+			std::string chan = std::string(buff).substr(it, it2 - it);
+			std::cout <<"["<< &buff[it2] <<"]"<<  std::endl;
+
+			// it = std::string(buff).find(".");
+			// it2 = std::string(buff).find("\r");
+			// std::string com = std::string(buff).substr(it2 - it);
+
+			sendCommand("", chan);
+		}
+	}	
+}
+
+void Botini::sendCommand(std::string cmd, std::string chan)
+{
+	(void)cmd;
+	std::cout << "Envio un mensaje a [" << chan <<"]" <<  std::endl;
+	sendAnswer("El día está brillante porque ya estoy aquí!", chan);
 }

@@ -102,8 +102,6 @@ void Server::server_loop()
 		}
 		if (_clients_to_auth)
 			register_clients();
-
-		//TODO: CHANNEL COSAS
 	}
 	
 }
@@ -214,7 +212,6 @@ void Server::poll_client(size_t p_idx)
 			std::deque<std::string>::iterator it = std::find(_registered_clients.begin(), _registered_clients.end(), nick);
 			if (it != _registered_clients.end())
 				_registered_clients.erase(it);
-			//TODO: eliminar de los canales
 		}
 		_polls.erase(_polls.begin() + p_idx);
 		_clients.erase(_clients.begin() + p_idx - 1);

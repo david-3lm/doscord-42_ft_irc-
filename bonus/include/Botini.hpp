@@ -44,7 +44,8 @@ private:
 	void onConnect();
 	void onDisconnect();
 	void sendMsg(std::string msg);
-	void sendAnswer(std::string msg);
+	void sendAnswer(std::string msg, std::string chan);
+	void sendCommand(std::string cmd, std::string chan);
 
 public:
     Botini(std::string h, std::string p, std::string pass);

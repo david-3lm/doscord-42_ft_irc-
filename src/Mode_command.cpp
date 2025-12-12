@@ -61,7 +61,6 @@ void Server::mode_topic(Channel& c, size_t cl_idx, bool mode)
 
 void Server::mode_key(Channel& c, size_t cl_idx, bool mode, std::string arg)
 {
-	//TODO RECIBIR EL ARGUMENTO
 	std::string msg;
 
 	if (arg.empty() && mode == true)
@@ -100,7 +99,6 @@ void Server::mode_key(Channel& c, size_t cl_idx, bool mode, std::string arg)
 
 void Server::mode_operator(Channel& c, size_t cl_idx, bool mode, std::string arg)
 {
-	//TODO RECIBIR ARG
 	std::string msg;
 
 	if (arg.empty())
@@ -119,11 +117,10 @@ void Server::mode_operator(Channel& c, size_t cl_idx, bool mode, std::string arg
 		return ;
 	}
 
-	size_t id_arg = search_id_nick(arg);
+	size_t id_arg = search_id_nick(arg);	
 	if (mode == true && !c.isOperator(arg))
 	{
-		c.addOperator(arg);
-		msg = ":doscord.irc 381 " + arg + " " + c.getName() + " : " + arg + " You are now an IRC operator";
+		msg = ":doscord.irc 381 " + arg + " " + c.getName() + " : " + arg + " You are now an IRC operator\r\n";
 		send(_polls[id_arg + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
@@ -140,7 +137,6 @@ void Server::mode_operator(Channel& c, size_t cl_idx, bool mode, std::string arg
 
 void Server::mode_limit(Channel& c, size_t cl_idx, bool mode, std::string arg)
 {
-	//TODO: RECIBIR ARG
 	std::string msg;
 
 	if (arg.empty() && mode == true)
@@ -193,15 +189,6 @@ void Server::mode_limit(Channel& c, size_t cl_idx, bool mode, std::string arg)
 
 void Server::ch_mode(std::string line, size_t cl_idx)
 {
-	/*TODO:
-	/mode #channel +/-attribute [data]
-		· i: Set/remove Invite-only channel
-		· t: Set/remove the restrictions of the TOPIC command to channel operators
-		· k: Set/remove the channel key (password)
-		· o: Give/take channel operator privilege
-		· l: Set/remove the user limit to channe
-	*/
-
 	std::string chan;
 	std::string mode;
 	std::string msg;
