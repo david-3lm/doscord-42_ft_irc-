@@ -172,27 +172,33 @@ void Botini::update()
 			sendMsg(CMD_JOIN(chan));
 			usleep(3000);
 			sendAnswer("¿Me llamabas?", chan);
-			std::cout << "[" << chan << "]" << std::endl;
 		}
 		else if (std::string(buff).find(":.") != std::string::npos)
 		{
 			size_t it = std::string(buff).find("#");
 			size_t it2 = std::string(buff).find(" :");
 			std::string chan = std::string(buff).substr(it, it2 - it);
-			std::cout <<"["<< &buff[it2] <<"]"<<  std::endl;
 
-			// it = std::string(buff).find(".");
-			// it2 = std::string(buff).find("\r");
-			// std::string com = std::string(buff).substr(it2 - it);
+			
+			size_t it_final = std::string(buff).find("\r");
+			std::string com = std::string(buff).substr(it, it_final - it);
+			com = com.substr(com.find(":") + 1, it_final - com.find(":") + 1);
 
-			sendCommand("", chan);
+			if (com[0] == '.')
+				sendCommand(&com[1], chan);
 		}
 	}	
 }
 
 void Botini::sendCommand(std::string cmd, std::string chan)
 {
-	(void)cmd;
-	std::cout << "Envio un mensaje a [" << chan <<"]" <<  std::endl;
-	sendAnswer("El día está brillante porque ya estoy aquí!", chan);
+	if (cmd == "weather")
+		sendAnswer("El día está brillante porque ya estoy aquí!", chan);
+	else if (cmd == "ping")
+		sendAnswer("Pong!", chan);
+	else if (cmd == "cat")
+		sendAnswer("nya... 🐱", chan);
+	else if (cmd == "dog")
+		sendAnswer("Woof! 🐶", chan);
+	//TODO: lo que se te ocurra. Vuelvete loco
 }

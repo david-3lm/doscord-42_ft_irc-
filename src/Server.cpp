@@ -117,8 +117,6 @@ void Server::register_clients()
 		std::cout << "i = " << i << "[" << _clients[i].getNick() << "]" << "[" << _clients[i].getUser() << "]" << "[" << _clients[i].getPass() << "]" << "[" << _clients[i].getRegistered() << "]" << std::endl;
 		if (_clients[i].tryToRegister(_registered_clients))
 		{
-			std::cout << "Try to register" << std::endl;
-
 			nick = _clients[i].getNick();
 			_registered_clients.push_back(nick);
 			_clients_to_auth--;

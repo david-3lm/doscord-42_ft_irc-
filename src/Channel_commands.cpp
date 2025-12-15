@@ -218,6 +218,13 @@ void Server::ch_invite(std::string line, size_t cl_idx)
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
+	if (search_id_nick(nick_invite) == _clients.size())
+	{
+		std::cout << RED << "Nick no exist" << NO_COLOR << std::endl;
+		msg = ":doscord.irc 401 " + _clients[cl_idx].getNick() + " " + chan + " :No such nick " + nick_invite + "\r\n";
+		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+		return ;
+	}
 
 	Channel &c = find_channel(chan);
 
