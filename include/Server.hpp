@@ -36,6 +36,7 @@
 #include <Client.hpp>
 #include <Server.hpp>
 #include <Channel.hpp>
+#include <ascii.hpp>
 
 
 template<class T> std::string	to_string(const T& value)

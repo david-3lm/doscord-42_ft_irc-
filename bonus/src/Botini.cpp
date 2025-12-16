@@ -75,6 +75,10 @@ void Botini::botConnect()
 	sendMsg(CMD_USER(_nick, _realname));
 	usleep(3000);
 	sendMsg(CMD_JOIN("#bot"));
+	readJSON();
+	_pokeInt = 1;
+	_pokeChan = "";
+	_pokeActive = false;
 }
 
 void Botini::sendAnswer(std::string msg, std::string chan)
@@ -187,6 +191,14 @@ void Botini::update()
 			if (com[0] == '.')
 				sendCommand(&com[1], chan);
 		}
+		else if (_pokeActive)
+		{
+			if (std::string(buff).find(_mapPoke[_pokeInt]) != std::string::npos)
+			{
+				sendAnswer("POKEMON ACERTADO!", _pokeChan);
+				_pokeActive = false;
+			}
+		}
 	}	
 }
 
@@ -200,5 +212,59 @@ void Botini::sendCommand(std::string cmd, std::string chan)
 		sendAnswer("nya... 🐱", chan);
 	else if (cmd == "dog")
 		sendAnswer("Woof! 🐶", chan);
+	else if (cmd == "pokemon")
+		startPokeQuiz(chan);
 	//TODO: lo que se te ocurra. Vuelvete loco
+}
+
+
+static std::string trim(const std::string &s)
+{
+    size_t start = s.find_first_not_of(" \t\n\r");
+    size_t end = s.find_last_not_of(" \t\n\r");
+    if (start == std::string::npos)
+        return "";
+    return s.substr(start, end - start + 1);
+}
+
+void Botini::startPokeQuiz(std::string chan)
+{
+	_pokeActive = true;
+	_pokeChan = chan;
+	srand(time(0));
+
+	_pokeInt = rand() % _mapPoke.size() + 1;
+	std::stringstream ss;
+
+	ss<< _pokeInt;
+	std::string msg = "Debes decirme que pokemon es el número: " + ss.str();
+	sendAnswer(msg, chan);
+}
+
+void Botini::readJSON()
+{
+    std::ifstream file("./include/pokemon.json");
+    if (!file.is_open())
+        return;
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string content = buffer.str();
+
+    size_t pos = 0;
+    while ((pos = content.find("\"index\"", pos)) != std::string::npos)
+    {
+        size_t pos_dd = content.find(":", pos);
+        size_t comma = content.find(",", pos_dd);
+        int index = std::atoi(content.substr(pos_dd + 1, comma - pos_dd - 1).c_str());
+
+        size_t namePos = content.find("\"name\"", comma);
+        pos_dd = content.find(":", namePos);
+        size_t quote1 = content.find("\"", pos_dd + 1);
+        size_t quote2 = content.find("\"", quote1 + 1);
+        std::string name = content.substr(quote1 + 1, quote2 - quote1 - 1);
+
+        _mapPoke[index] = name;
+        pos = quote2;
+    }
 }

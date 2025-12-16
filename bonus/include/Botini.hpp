@@ -32,6 +32,8 @@
 #include <unistd.h>
 #include <deque>
 #include <vector>
+#include <map>
+
 
 class Botini 
 {
@@ -46,6 +48,13 @@ private:
 	void sendMsg(std::string msg);
 	void sendAnswer(std::string msg, std::string chan);
 	void sendCommand(std::string cmd, std::string chan);
+
+	std::map<int, std::string> _mapPoke;
+	void startPokeQuiz(std::string chan);
+	void readJSON();
+	std::string _pokeChan;
+	int _pokeInt;
+	bool _pokeActive;
 
 public:
     Botini(std::string h, std::string p, std::string pass);
