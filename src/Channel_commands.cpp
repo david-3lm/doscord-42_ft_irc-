@@ -195,6 +195,11 @@ void Server::ch_kick(std::string line, size_t cl_idx)
 	// send(_polls[idx_kick + 1].fd, msg.c_str(), msg.size(), 0);
 	msg = ":" + _clients[cl_idx].getNick() + " KICK " + chan + " " + nick + " : " + reason + "\r\n";
 	send(_polls[idx_kick + 1].fd, msg.c_str(), msg.size(), 0);
+	for (int i = 0; i < _clients.size(); i++)
+	{
+		if (_clients[i].getNick() == nick) continue;
+		send(_polls[i + 1].fd, msg.c_str(), msg.size(),0);
+	}
 	msg = ":doscord.irc 0 " + c.getName() + " :" + ban + "\t\tFrom channel: " + chan + "\r\n";
 	send(_polls[idx_kick + 1].fd, msg.c_str(), msg.size(), 0);
 	c.kickMember(nick);

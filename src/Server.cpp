@@ -194,6 +194,8 @@ void Server::poll_server()
 void Server::poll_client(size_t p_idx)
 {
 	ssize_t read;
+	std::string cl_nick = _clients[p_idx - 1].getNick();
+
 
 	read = recv(_polls[p_idx].fd, _buff, 4096, 0);
 	if (read <= 0)
@@ -210,6 +212,8 @@ void Server::poll_client(size_t p_idx)
 			std::deque<std::string>::iterator it = std::find(_registered_clients.begin(), _registered_clients.end(), nick);
 			if (it != _registered_clients.end())
 				_registered_clients.erase(it);
+			for (int i = 0; i < _channels.size(); i++)
+				_channels[i].kickMember(cl_nick);
 		}
 		_polls.erase(_polls.begin() + p_idx);
 		_clients.erase(_clients.begin() + p_idx - 1);
