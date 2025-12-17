@@ -116,6 +116,51 @@ void Botini::sendAnswer(std::string msg, std::string chan)
 	}
 }
 
+void Botini::sendLetrero(std::string msg, std::string chan)
+{
+    const int minWidth = 26;
+    int boxWidth = minWidth;
+
+    if ((int)msg.size() > boxWidth)
+        boxWidth = msg.size();
+
+    int leftPad  = (boxWidth - msg.size()) / 2;
+    int rightPad = boxWidth - msg.size() - leftPad;
+
+    std::string top    = "." + std::string(boxWidth + 2, '-') + ".";
+    std::string empty  = "|" + std::string(boxWidth + 2, ' ') + "|";
+    std::string middle = "|" + std::string(leftPad + 1, ' ')
+                               + msg
+                               + std::string(rightPad + 3, ' ')
+                               + "|";
+
+    std::string bottom = "|" + std::string(boxWidth + 2, '_') + "|";
+
+    std::string ascii =
+"      _     " + top    + "\n"
+"     /-\\    " + empty  + "\n"
+"     \\_/    " + empty  + "\n"
+"    /\\Y/\\   " + middle + "\n"
+"   || : |\\//" + bottom + "\n"
+"   || : |\\/\n"
+"   (|---|\n"
+"    | | |\n"
+"    | | |\n"
+"    |_|_|\n"
+"    (/ \\)\n";
+
+    // enviar ascii a chan
+
+	std::stringstream ss(ascii);
+	std::string m;
+
+
+	while(std::getline(ss, m))
+	{
+		sendMsg(CMD_PRIVMSG(chan, m) + "\r\n");
+	}
+}
+
 void Botini::update()
 {
 	while (true)
@@ -252,7 +297,7 @@ void Botini::startPokeQuiz(std::string chan)
 
 	ss<< _pokeInt;
 	std::string msg = "¿Cuál es este Pokémon? " + ss.str();
-	sendAnswer(msg, chan);
+	sendLetrero(msg, chan);
 }
 
 
@@ -263,7 +308,8 @@ void Botini::sendJoke(std::string chan)
 		sendAnswer("Me quedé sin chistes, me borraste mi JSON espabilao?", chan);
 		return;
 	}
-	sendAnswer("Ahí va mi mejor chiste", chan);
+	// sendAnswer("Ahí va mi mejor chiste", chan);
+	sendMsg(CMD_PRIVMSG(chan, "Ahí va mi mejor chiste"));
 
 	srand(time(0));
 
@@ -272,7 +318,7 @@ void Botini::sendJoke(std::string chan)
 		idx++;
 	
 	sendMsg(CMD_PRIVMSG(chan, "\n"));
-	sendMsg(CMD_PRIVMSG(chan, _mapJoke[idx]));
+	sendLetrero(_mapJoke[idx],chan);
 	
 }
 
@@ -283,7 +329,8 @@ void Botini::sendQuestion(std::string chan)
 		sendAnswer("Me quedé sin preguntas, me borraste mi JSON espabilao?", chan);
 		return;
 	}
-	sendAnswer("Ahí va una pregunta filosófica(made in Alex):", chan);
+	// sendAnswer("Ahí va una pregunta filosófica(made in Alex):", chan);
+	sendMsg(CMD_PRIVMSG(chan, "Ahí va una pregunta filosófica (made in Alex)"));
 
 	srand(time(0));
 
@@ -292,7 +339,7 @@ void Botini::sendQuestion(std::string chan)
 		idx++;
 	
 	sendMsg(CMD_PRIVMSG(chan, "\n"));
-	sendMsg(CMD_PRIVMSG(chan, _mapQuestion[idx]));
+	sendLetrero( _mapQuestion[idx], chan);
 }
 
 void Botini::readJSONPoke()

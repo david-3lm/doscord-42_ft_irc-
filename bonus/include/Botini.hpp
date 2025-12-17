@@ -47,6 +47,7 @@ private:
 	void onDisconnect();
 	void sendMsg(std::string msg);
 	void sendAnswer(std::string msg, std::string chan);
+	void sendLetrero(std::string msg, std::string chan);
 	void sendCommand(std::string cmd, std::string chan);
 
 	std::map<int, std::string> _mapPoke;
