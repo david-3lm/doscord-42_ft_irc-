@@ -50,11 +50,15 @@ private:
 	void sendCommand(std::string cmd, std::string chan);
 
 	std::map<int, std::string> _mapPoke;
+	std::map<int, std::string> _mapJoke;
 	void startPokeQuiz(std::string chan);
-	void readJSON();
+	void readJSONPoke();
+	void readJSONJoke();
 	std::string _pokeChan;
 	int _pokeInt;
 	bool _pokeActive;
+
+	void sendJoke(std::string chan);
 
 public:
     Botini(std::string h, std::string p, std::string pass);

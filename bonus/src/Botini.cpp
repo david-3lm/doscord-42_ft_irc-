@@ -75,7 +75,8 @@ void Botini::botConnect()
 	sendMsg(CMD_USER(_nick, _realname));
 	usleep(3000);
 	sendMsg(CMD_JOIN("#bot"));
-	readJSON();
+	readJSONPoke();
+	readJSONJoke();
 	_pokeInt = 1;
 	_pokeChan = "";
 	_pokeActive = false;
@@ -214,7 +215,10 @@ void Botini::sendCommand(std::string cmd, std::string chan)
 		sendAnswer("Woof! 🐶", chan);
 	else if (cmd == "pokemon")
 		startPokeQuiz(chan);
-	//TODO: lo que se te ocurra. Vuelvete loco
+	else if (cmd == "chiste")
+		sendJoke(chan);
+	else if (cmd == "time")
+		sendAnswer("SOL = día | NO SOL = noche", chan);
 }
 
 
@@ -229,6 +233,11 @@ static std::string trim(const std::string &s)
 
 void Botini::startPokeQuiz(std::string chan)
 {
+	if (_mapPoke.empty())
+	{
+		sendAnswer("Qué es un Pokemon? (devuelveme mi JSON por favor)", chan);
+		return;
+	}
 	_pokeActive = true;
 	_pokeChan = chan;
 	srand(time(0));
@@ -243,7 +252,28 @@ void Botini::startPokeQuiz(std::string chan)
 	sendAnswer(msg, chan);
 }
 
-void Botini::readJSON()
+
+void Botini::sendJoke(std::string chan)
+{
+	if (_mapJoke.empty())
+	{
+		sendAnswer("Me quedé sin chistes, me borraste mi JSON espabilao?", chan);
+		return;
+	}
+	sendAnswer("Ahí va mi mejor chiste", chan);
+
+	srand(time(0));
+
+	int idx = rand() % _mapJoke.size() + 1;
+	if (idx == 0)
+		idx++;
+	
+	sendMsg(CMD_PRIVMSG(chan, "\n"));
+	sendMsg(CMD_PRIVMSG(chan, _mapJoke[idx]));
+	
+}
+
+void Botini::readJSONPoke()
 {
     std::ifstream file("./include/pokemon.json");
     if (!file.is_open())
@@ -268,5 +298,34 @@ void Botini::readJSON()
 
         _mapPoke[index] = name;
         pos = quote2;
+    }
+}
+
+void Botini::readJSONJoke()
+{
+    std::ifstream file("./include/chistes.json");
+    if (!file.is_open())
+        return;
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string content = buffer.str();
+
+    size_t pos = 0;
+    while ((pos = content.find("\"id\"", pos)) != std::string::npos)
+    {
+        size_t pos_dd = content.find(":", pos);
+        size_t comma = content.find(",", pos_dd);
+        int index = std::atoi(content.substr(pos_dd + 1, comma - pos_dd - 1).c_str());
+
+        size_t namePos = content.find("\"joke\"", comma);
+        pos_dd = content.find(":", namePos);
+        size_t quote1 = content.find("\"", pos_dd + 1);
+        size_t quote2 = content.find("\"", quote1 + 1);
+        std::string name = content.substr(quote1 + 1, quote2 - quote1 - 1);
+
+        _mapJoke[index] = name;
+        pos = quote2;
+		std::cout << "Rellenando JSON JOKE" << std::endl;
     }
 }
