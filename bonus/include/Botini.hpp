@@ -31,7 +31,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <deque>
-#include <vector>
+#include <deque>
 #include <map>
 
 
@@ -51,14 +51,17 @@ private:
 
 	std::map<int, std::string> _mapPoke;
 	std::map<int, std::string> _mapJoke;
+	std::map<int, std::string> _mapQuestion;
 	void startPokeQuiz(std::string chan);
 	void readJSONPoke();
 	void readJSONJoke();
+	void readJSONQuestion();
 	std::string _pokeChan;
 	int _pokeInt;
 	bool _pokeActive;
 
 	void sendJoke(std::string chan);
+	void sendQuestion(std::string chan);
 
 public:
     Botini(std::string h, std::string p, std::string pass);
