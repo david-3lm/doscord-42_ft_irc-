@@ -234,10 +234,12 @@ void Botini::startPokeQuiz(std::string chan)
 	srand(time(0));
 
 	_pokeInt = rand() % _mapPoke.size() + 1;
+	if (_pokeInt == 0)
+		_pokeInt++;
 	std::stringstream ss;
 
 	ss<< _pokeInt;
-	std::string msg = "Debes decirme que pokemon es el número: " + ss.str();
+	std::string msg = "¿Cuál es este Pokémon? " + ss.str();
 	sendAnswer(msg, chan);
 }
 

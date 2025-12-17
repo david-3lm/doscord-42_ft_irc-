@@ -48,8 +48,6 @@ void Server::init()
 
 	char ip_str[INET_ADDRSTRLEN];
 	inet_ntop(AF_INET, &(addr.sin_addr), ip_str, INET_ADDRSTRLEN);
-	std::cout << GREEN << "Prueba a ver si puede mostrar ip => " << ip_str << NO_COLOR << std::endl;
-	std::cout << GREEN << "Port => " << ntohs(addr.sin_port) << NO_COLOR << std::endl;
 	
 	if (bind(tcp_socket, (sockaddr *)&addr, sizeof(addr)) == -1)
 		throw ErrorExcept("Error binding the socket");
@@ -87,7 +85,6 @@ void Server::server_loop()
 			std::cerr << RED << "Error with the poll" << NO_COLOR <<std::endl;
 		else if(n_polls > 0)
 		{
-			std::cout << GREEN << "Number of polls: " << n_polls << std::endl;
 			for (size_t i = 0; i < _polls.size() && n_polls; i++)
 			{
 				if (_polls[i].revents & POLLIN)
@@ -113,14 +110,11 @@ void Server::register_clients()
 
 	while (i < _clients.size() && _clients_to_auth)
 	{
-		std::cout << i << " - Clientes registrados:  " << _registered_clients.size()<< std::endl;
-		std::cout << "i = " << i << "[" << _clients[i].getNick() << "]" << "[" << _clients[i].getUser() << "]" << "[" << _clients[i].getPass() << "]" << "[" << _clients[i].getRegistered() << "]" << std::endl;
 		if (_clients[i].tryToRegister(_registered_clients))
 		{
 			nick = _clients[i].getNick();
 			_registered_clients.push_back(nick);
 			_clients_to_auth--;
-			std::cout << "Enviamos mensaje a pollfd => " << i << std::endl;
 
 			std::string art = ASCII_CONNECT;
 
@@ -166,7 +160,6 @@ void Server::poll_server()
 	_polls.push_back(new_poll);
 	std::cout << RED;
 	_clients.push_back(Client(new_poll, addr));
-	std::cout << RED << "clients size = [" << _clients.size() << "]" << NO_COLOR << std::endl;
 	_clients_to_auth++;
 }
 
@@ -181,7 +174,7 @@ void Server::poll_client(size_t p_idx)
 	{
 		if (read == -1)
 			std::cerr << RED << "Error trying to read" << NO_COLOR << std::endl;
-		std::cout << CYAN << "cerramos clientes" << NO_COLOR << std::endl;
+		std::cout << CYAN << "Cerramos Clientes" << NO_COLOR << std::endl;
 		_clients[p_idx - 1].quitClient();
 		if (!_clients[p_idx - 1].getRegistered())
 			_clients_to_auth--;
@@ -249,11 +242,9 @@ Channel &Server::find_channel(std::string name)
 {
 	for (size_t i = 0; i < _channels.size(); i++)
 	{
-		std::cout << MAGENTA << "Channel [" << i << "] name = -" << _channels[i].getName() << "-" << NO_COLOR << std::endl;
 		if (_channels[i].getName() == name)
 			return _channels[i];
 	}
-	std::cout << MAGENTA << "CREAMOS CON NOMBRE => " << name << std::endl;
 	_channels.push_back(Channel(name, ""));
 	return _channels.back();
 }
@@ -263,11 +254,9 @@ size_t Server::find_channel_it(std::string name)
 	size_t i = 0;
 	for (; i < _channels.size(); i++)
 	{
-		std::cout << MAGENTA << "Channel [" << i << "] name = -" << _channels[i].getName() << "-" << NO_COLOR << std::endl;
 		if (_channels[i].getName() == name)
 			return i;
 	}
-	std::cout << "FIND CHANNEL I = " << i << std::endl;
 	return i;
 }
 

@@ -218,9 +218,7 @@ void Server::ch_mode(std::string line, size_t cl_idx)
 			arg = line.substr(line.find(" ") + 1, line.find("\r") - (line.find(" ") + 1));
 		}
 	}
-	
-	std::cout << YELLOW << "MODE: chan = -" << chan << "-\nmode = -" << mode << "-\narg = -" << arg << "-" << NO_COLOR << std::endl;
-	
+		
 	if (mode.empty())
 	{
 		// std::cout << RED << "Not parameters" << NO_COLOR << std::endl;

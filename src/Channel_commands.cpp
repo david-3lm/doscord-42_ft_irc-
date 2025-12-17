@@ -408,16 +408,13 @@ void Server::ch_msg(std::string line, size_t cl_idx)
 
 	for (size_t i = 0; i < _clients.size(); i++)
 	{
-		std::cout << "Envio msg a: -" << _clients[i].getNick() << "-" << std::endl;
 		if (c.isMember(_clients[i].getNick()) && i != cl_idx)
 		{
 			send_msg = ":" + _clients[cl_idx].getNick() + " " + "PRIVMSG" + " "+ chan + " " + msg + "\r\n";
 			std::cout << "Complete = " << send_msg << std::endl;
 			send(_polls[i + 1].fd, send_msg.c_str(), send_msg.size(), 0);
 		}
-
 	}
-	
 }
 
 void Server::ch_part(std::string line, size_t cl_idx)
@@ -426,7 +423,6 @@ void Server::ch_part(std::string line, size_t cl_idx)
 	std::string msg;
 	std::string send_msg;
 
-	std::cout << GREEN << "Entro ch_msg" << NO_COLOR << std::endl;
 	chan = line.substr(0, line.find(" "));
 	if (chan.empty())
 	{
