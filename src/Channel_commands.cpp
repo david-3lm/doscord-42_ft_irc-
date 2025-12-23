@@ -295,7 +295,7 @@ void Server::ch_topic(std::string line, size_t cl_idx)
 		return ;
 	}
 
-	if (!c.isOperator(_clients[cl_idx].getNick()))
+	if (!c.isOperator(_clients[cl_idx].getNick()) && c.getTopicRestict())
 	{
 		std::cout << RED << "Permission Denied -" << _clients[cl_idx].getNick() << " You're not an IRC operator" << NO_COLOR << std::endl;
 		msg = ":doscord.irc 481 " + _clients[cl_idx].getNick() + " " + chan + " : " + _clients[cl_idx].getNick() + " Permission Denied- You're not an IRC operator\r\n";
@@ -384,7 +384,7 @@ void Server::ch_msg(std::string line, size_t cl_idx)
 		}
 		send_msg = ":" +  _clients[cl_idx].getNick() + " PRIVMSG " + _clients[id_user].getNick() + " " + msg + "\r\n";
 		send(_polls[id_user + 1].fd, send_msg.c_str(), send_msg.size(), 0);
-		return ;		
+		return ;
 	}
 
 	if (!exist_channel(chan))

@@ -120,6 +120,7 @@ void Server::mode_operator(Channel& c, size_t cl_idx, bool mode, std::string arg
 	size_t id_arg = search_id_nick(arg);	
 	if (mode == true && !c.isOperator(arg))
 	{
+		c.addOperator(arg);
 		msg = ":doscord.irc 381 " + arg + " " + c.getName() + " : " + arg + " You are now an IRC operator\r\n";
 		send(_polls[id_arg + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;

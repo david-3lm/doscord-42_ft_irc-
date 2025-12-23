@@ -64,6 +64,11 @@ bool Channel::getIniviteMode() const
 	return _invite_mode;
 }
 
+bool Channel::getTopicRestict() const
+{
+	return _topic_restrict;
+}
+
 void Channel::setName(std::string name)
 {
 	_channel_name = name;

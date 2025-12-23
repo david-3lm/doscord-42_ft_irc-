@@ -33,6 +33,7 @@ public:
 	std::deque<std::string> getMembers()const;
 	size_t getLimit()const;
 	bool getIniviteMode()const;
+	bool getTopicRestict() const;
 
 	void setName(std::string);
 	void setPass(std::string);

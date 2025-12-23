@@ -7,10 +7,11 @@ Server::Server(int port, std::string pass) : _port(port), _pass(pass)
 	std::cout << std::endl;
 	std::cout << "PASS => " << _pass << std::endl;
 	std::cout << std::endl;
-	std::cout << "***************************" << NO_COLOR << std::endl;
-
-
+	std::cout << "***************************"  << std::endl;
+	
+	
 	init();
+	std::cout << "IP => " << inet_ntoa(_address.sin_addr) << NO_COLOR << std::endl;
 
 	server_loop();
 }
