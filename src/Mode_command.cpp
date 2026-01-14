@@ -1,6 +1,6 @@
 #include "Server.hpp"
 
-void Server::mode_invite(Channel& c, size_t cl_idx, bool mode)
+void Server::mode_invite(Channel& c, bool mode)
 {
 	std::string msg;
 
@@ -29,7 +29,7 @@ void Server::mode_invite(Channel& c, size_t cl_idx, bool mode)
 	}
 }
 
-void Server::mode_topic(Channel& c, size_t cl_idx, bool mode)
+void Server::mode_topic(Channel& c, bool mode)
 {
 	std::string msg;
 
@@ -258,9 +258,9 @@ void Server::ch_mode(std::string line, size_t cl_idx)
 	if (mode.find("+", 0) != std::string::npos && mode.size() <= 2)
 	{
 		if (mode.find("i") != std::string::npos)
-			mode_invite(c, cl_idx, true);
+			mode_invite(c, cl_idx);
 		else if (mode.find("t") != std::string::npos)
-			mode_topic(c, cl_idx, true);
+			mode_topic(c, cl_idx);
 		else if (mode.find("k") != std::string::npos)
 			mode_key(c, cl_idx, true, arg);
 		else if (mode.find("o") != std::string::npos)
@@ -278,9 +278,9 @@ void Server::ch_mode(std::string line, size_t cl_idx)
 	if (mode.find("-", 0) != std::string::npos && mode.size() <= 2)
 	{
 		if (mode.find("i") != std::string::npos)
-			mode_invite(c, cl_idx, false);
+			mode_invite(c, cl_idx);
 		else if (mode.find("t") != std::string::npos)
-			mode_topic(c, cl_idx, false);
+			mode_topic(c, cl_idx);
 		else if (mode.find("k") != std::string::npos)
 			mode_key(c, cl_idx, false, arg);
 		else if (mode.find("o") != std::string::npos)

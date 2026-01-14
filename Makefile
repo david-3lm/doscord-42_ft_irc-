@@ -17,8 +17,7 @@ SRC_FILES = main.cpp \
 HEADERS =
 
 CXX = c++
-#CXXFLAGS = -Wall -Werror -Wextra -Iinclude -std=c++98 
-CXXFLAGS = -Iinclude -std=c++98 
+CXXFLAGS = -Wall -Werror -Wextra -Iinclude -std=c++98 
 RM = rm -f
 
 # COLORES

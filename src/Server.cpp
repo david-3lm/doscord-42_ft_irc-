@@ -185,7 +185,7 @@ void Server::poll_client(size_t p_idx)
 			std::deque<std::string>::iterator it = std::find(_registered_clients.begin(), _registered_clients.end(), nick);
 			if (it != _registered_clients.end())
 				_registered_clients.erase(it);
-			for (int i = 0; i < _channels.size(); i++)
+			for (size_t i = 0; i < _channels.size(); i++)
 				_channels[i].kickMember(cl_nick);
 		}
 		_polls.erase(_polls.begin() + p_idx);

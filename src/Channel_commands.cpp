@@ -176,7 +176,7 @@ void Server::ch_kick(std::string line, size_t cl_idx)
 	// send(_polls[idx_kick + 1].fd, msg.c_str(), msg.size(), 0);
 	msg = ":" + _clients[cl_idx].getNick() + " KICK " + chan + " " + nick + " : " + reason + "\r\n";
 	send(_polls[idx_kick + 1].fd, msg.c_str(), msg.size(), 0);
-	for (int i = 0; i < _clients.size(); i++)
+	for (unsigned int i = 0; i < _clients.size(); i++)
 	{
 		if (_clients[i].getNick() == nick) continue;
 		send(_polls[i + 1].fd, msg.c_str(), msg.size(),0);
@@ -244,7 +244,7 @@ void Server::ch_invite(std::string line, size_t cl_idx)
 	msg = ":" + _clients[cl_idx].getNick() + " INVITE " + nick_invite + " " + chan + "\r\n";
 	send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 
-	for (int i = 0; i < _clients.size(); i++)
+	for (unsigned int i = 0; i < _clients.size(); i++)
 	{
 		if (_clients[i].getNick() == nick_invite)
 		{
@@ -344,12 +344,18 @@ void Server::ch_msg(std::string line, size_t cl_idx)
 		send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
 		return ;
 	}
-
 	if (pos_dd == line.npos)//In channel
 	{
 		msg = line.substr(pos_dd, line.find("\r") - pos_dd);
 		Channel &c = find_channel(chan);
 
+		if (!c.isMember(_clients[cl_idx].getNick()))
+		{
+			std::cout << RED << "You're not on that channel" << NO_COLOR << std::endl;
+			msg = ":doscord.irc 442 " + _clients[cl_idx].getNick() + " " + chan + " : You're not on that channel\r\n";
+			send(_polls[cl_idx + 1].fd, msg.c_str(), msg.size(), 0);
+			return ;
+		}
 		for (size_t i = 0; i < _clients.size(); i++)
 		{
 			std::cout << "Envio msg a: -" << _clients[i].getNick() << "-" << std::endl;
@@ -367,6 +373,8 @@ void Server::ch_msg(std::string line, size_t cl_idx)
 	if (chan[0] != '#')//To user
 	{
 		size_t id_user = search_id_nick(chan);
+		if (!_clients[cl_idx].getRegistered())
+			return ;
 		if (id_user == _clients.size())
 		{
 			std::cout << RED << "No such nick/channel" << NO_COLOR << std::endl;
