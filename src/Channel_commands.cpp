@@ -374,7 +374,12 @@ void Server::ch_msg(std::string line, size_t cl_idx)
 	{
 		size_t id_user = search_id_nick(chan);
 		if (!_clients[cl_idx].getRegistered())
+		{
+			std::cout << RED << "You have not registered" << NO_COLOR << std::endl;
+			send_msg = ":doscord.irc 401 : You have not registered\r\n";
+			send(_polls[cl_idx + 1].fd, send_msg.c_str(), send_msg.size(), 0);
 			return ;
+		}
 		if (id_user == _clients.size())
 		{
 			std::cout << RED << "No such nick/channel" << NO_COLOR << std::endl;
