@@ -78,6 +78,8 @@ void Botini::botConnect()
 	readJSONPoke();
 	readJSONJoke();
 	readJSONQuestion();
+	readJSONSaying();
+	readJSONSaying2();
 	_pokeInt = 1;
 	_pokeChan = "";
 	_pokeActive = false;
@@ -263,6 +265,8 @@ void Botini::sendCommand(std::string cmd, std::string chan)
 		startPokeQuiz(chan);
 	else if (cmd == "chiste")
 		sendJoke(chan);
+	else if (cmd == "refran")
+		sendSaying(chan);
 	else if (cmd == "time")
 		sendAnswer("SOL = día | NO SOL = noche", chan);
 	else if (cmd == "pregunta")
@@ -330,6 +334,29 @@ void Botini::sendQuestion(std::string chan)
 	
 	sendMsg(CMD_PRIVMSG(chan, "\n"));
 	sendLetrero( _mapQuestion[idx], chan);
+}
+
+void Botini::sendSaying(std::string chan)
+{
+	if (_mapSaying1.empty() || _mapSaying2.empty())
+	{
+		sendAnswer("Me quedé sin refranes, me borraste mi JSON espabilao?", chan);
+		return;
+	}
+	// sendAnswer("Ahí va una pregunta filosófica(made in Alex):", chan);
+	sendMsg(CMD_PRIVMSG(chan, "Mi abuelo Macintosh me contaba este refrán: "));
+
+	srand(time(0));
+
+	int idx = rand() % _mapSaying1.size() + 1;
+	if (idx == 0)
+		idx++;
+	int idx2 = rand() % _mapSaying1.size() + 1;
+	if (idx2 == 0)
+		idx2++;
+	
+	sendMsg(CMD_PRIVMSG(chan, "\n"));
+	sendLetrero( std::string(_mapSaying1[idx] + _mapSaying2[idx2]), chan);
 }
 
 void Botini::readJSONPoke()
@@ -410,9 +437,64 @@ void Botini::readJSONQuestion()
         size_t quote1 = content.find("\"", pos_dd + 1);
         size_t quote2 = content.find("\"", quote1 + 1);
         std::string name = content.substr(quote1 + 1, quote2 - quote1 - 1);
-		std::cout << "Rellenando JSON QUESTION" << std::endl;
 
         _mapQuestion[index] = name;
+        pos = quote2;
+    }
+}
+
+void Botini::readJSONSaying()
+{
+    std::ifstream file("./include/refranes_1.json");
+    if (!file.is_open())
+        return;
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string content = buffer.str();
+
+    size_t pos = 0;
+    while ((pos = content.find("\"id\"", pos)) != std::string::npos)
+    {
+        size_t pos_dd = content.find(":", pos);
+        size_t comma = content.find(",", pos_dd);
+        int index = std::atoi(content.substr(pos_dd + 1, comma - pos_dd - 1).c_str());
+
+        size_t namePos = content.find("\"saying\"", comma);
+        pos_dd = content.find(":", namePos);
+        size_t quote1 = content.find("\"", pos_dd + 1);
+        size_t quote2 = content.find("\"", quote1 + 1);
+        std::string name = content.substr(quote1 + 1, quote2 - quote1 - 1);
+
+        _mapSaying1[index] = name;
+        pos = quote2;
+    }
+}
+
+void Botini::readJSONSaying2()
+{
+    std::ifstream file("./include/refranes_2.json");
+    if (!file.is_open())
+        return;
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string content = buffer.str();
+
+    size_t pos = 0;
+    while ((pos = content.find("\"id\"", pos)) != std::string::npos)
+    {
+        size_t pos_dd = content.find(":", pos);
+        size_t comma = content.find(",", pos_dd);
+        int index = std::atoi(content.substr(pos_dd + 1, comma - pos_dd - 1).c_str());
+
+        size_t namePos = content.find("\"saying\"", comma);
+        pos_dd = content.find(":", namePos);
+        size_t quote1 = content.find("\"", pos_dd + 1);
+        size_t quote2 = content.find("\"", quote1 + 1);
+        std::string name = content.substr(quote1 + 1, quote2 - quote1 - 1);
+
+        _mapSaying2[index] = name;
         pos = quote2;
     }
 }

@@ -53,16 +53,22 @@ private:
 	std::map<int, std::string> _mapPoke;
 	std::map<int, std::string> _mapJoke;
 	std::map<int, std::string> _mapQuestion;
+	std::map<int, std::string> _mapSaying1;
+	std::map<int, std::string> _mapSaying2;
 	void startPokeQuiz(std::string chan);
 	void readJSONPoke();
 	void readJSONJoke();
 	void readJSONQuestion();
+	void readJSONSaying();
+	void readJSONSaying2();
+
 	std::string _pokeChan;
 	int _pokeInt;
 	bool _pokeActive;
 
 	void sendJoke(std::string chan);
 	void sendQuestion(std::string chan);
+	void sendSaying(std::string chan);
 
 public:
     Botini(std::string h, std::string p, std::string pass);
